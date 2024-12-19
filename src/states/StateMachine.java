@@ -37,8 +37,10 @@ public class StateMachine {
         this.current = this.states.get(stateName);
 
         // Add gStateMachine and stateName to enterParams dictionary
-        enterParams.put("gStateMachine", this);
-        enterParams.put("stateName", stateName);
+        if (enterParams != null) {
+            enterParams.put("gStateMachine", this);
+            enterParams.put("stateName", stateName);
+        }
 
         // Enter new state
         this.current.enter(enterParams);
