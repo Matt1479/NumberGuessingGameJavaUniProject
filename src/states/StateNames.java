@@ -1,11 +1,16 @@
 package states;
 
 public enum StateNames {
-    START,
-    PLAY,
-    EXIT;
+    // Game
+    Start,
+    Play,
+    Exit,
+    // Entity
+    EntityBase,
+    // Player
+    PlayerBase;
 
-    public static void displayOptions(Object doNotDisplay) {
+    public static void displayOptions(StateNames doNotDisplay) {
         int i = 0;
         Util.log("Options:");
         for (StateNames stateName : StateNames.values()) {

@@ -7,11 +7,11 @@ import states.game.StartState;
 public class StateFactory {
     public static BaseState createState(StateNames stateName) {
         switch (stateName) {
-            case START:
+            case Start:
                 return new StartState();
-            case PLAY:
+            case Play:
                 return new PlayState();
-            case EXIT:
+            case Exit:
                 return new ExitState();
             default:
                 return new BaseState();

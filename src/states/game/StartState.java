@@ -7,6 +7,10 @@ import states.BaseState;
 import states.StateMachine;
 import states.StateNames;
 import states.Util;
+import states.entity.Entity;
+import states.entity.EntityBaseState;
+import states.entity.player.Player;
+import states.entity.player.PlayerBaseState;
 
 public class StartState extends BaseState {
     // Constructor (init)
@@ -22,6 +26,14 @@ public class StartState extends BaseState {
         Util.log("\n" + this.stateName.toString().toLowerCase() + "State.enter()");
 
         StateNames.displayOptions(this.stateName);
+
+        Entity e = new Entity(null);
+        e.addState(StateNames.EntityBase, new EntityBaseState());
+        e.changeState(StateNames.EntityBase);
+
+        Player p = new Player(null);
+        p.addState(StateNames.PlayerBase, new PlayerBaseState());
+        p.changeState(StateNames.PlayerBase);
     }
 
     public void exit() {
