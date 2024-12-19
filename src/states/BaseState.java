@@ -8,7 +8,7 @@ public class BaseState extends Object {
     protected Hashtable<Object, Object> enterParams;
     protected StateMachine gStateMachine;
     protected Scanner in;
-    protected Object stateName;
+    protected StateNames stateName;
 
     // Init/Constructor
     // public BaseState() {}

@@ -17,7 +17,7 @@ public class StartState extends BaseState {
         this.enterParams = enterParams;
         this.gStateMachine = (StateMachine) enterParams.get("gStateMachine");
         this.in = (Scanner) enterParams.get("in");
-        this.stateName = enterParams.get("stateName");
+        this.stateName = (StateNames) enterParams.get("stateName");
 
         Util.log("\n" + this.stateName.toString().toLowerCase() + "State.enter()");
 
@@ -41,13 +41,13 @@ public class StartState extends BaseState {
         StateNames selectedState = StateNames.values()[choice];
 
         switch (selectedState) {
-            case PLAY:
-                this.gStateMachine.change(StateNames.PLAY, new Hashtable<>() {{
+            case Play:
+                this.gStateMachine.change(StateNames.Play, new Hashtable<>() {{
                     put("in", in);
                 }});
                 break;
-            case EXIT:
-                this.gStateMachine.change(StateNames.EXIT, new Hashtable<>() {{
+            case Exit:
+                this.gStateMachine.change(StateNames.Exit, new Hashtable<>() {{
                     put("in", in);
                 }});
                 break;
