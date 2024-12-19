@@ -29,11 +29,15 @@ public class StartState extends BaseState {
 
         Entity e = new Entity(null);
         e.addState(StateNames.EntityBase, new EntityBaseState());
-        e.changeState(StateNames.EntityBase);
+        e.changeState(StateNames.EntityBase, new Hashtable<>() {{
+            put("entity", e);
+        }});
 
         Player p = new Player(null);
         p.addState(StateNames.PlayerBase, new PlayerBaseState());
-        p.changeState(StateNames.PlayerBase);
+        p.changeState(StateNames.PlayerBase, new Hashtable<>() {{
+            put("entity", p);
+        }});
     }
 
     public void exit() {

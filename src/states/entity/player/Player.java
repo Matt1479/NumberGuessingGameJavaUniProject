@@ -16,8 +16,8 @@ public class Player extends Entity {
     public void addState(StateNames stateName, BaseState state) {
         this.stateMachine.add(stateName, state);
     }
-    public void changeState(StateNames stateName) {
-        this.stateMachine.change(stateName, this.initParams);
+    public void changeState(StateNames stateName, Hashtable<Object, Object> enterParams) {
+        this.stateMachine.change(stateName, enterParams);
     }
     public void update() {
         this.stateMachine.update();
