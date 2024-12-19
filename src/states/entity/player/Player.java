@@ -12,17 +12,17 @@ public class Player extends Entity {
         super(initParams);
     }
 
-    // Overwritten methods
-    public void addState(StateNames stateName, BaseState state) {
+    // Overwritten (overridden) methods
+    @Override public void addState(StateNames stateName, BaseState state) {
         this.stateMachine.add(stateName, state);
     }
-    public void changeState(StateNames stateName, Hashtable<Object, Object> enterParams) {
+    @Override public void changeState(StateNames stateName, Hashtable<Object, Object> enterParams) {
         this.stateMachine.change(stateName, enterParams);
     }
-    public void update() {
+    @Override public void update() {
         this.stateMachine.update();
     }
-    public void render() {
+    @Override public void render() {
         this.stateMachine.render();
     }
 }

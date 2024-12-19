@@ -7,18 +7,18 @@ import states.entity.Entity;
 import states.entity.EntityBaseState;
 
 public class PlayerBaseState extends EntityBaseState {
-    public void enter(Hashtable<Object, Object> enterParams) {
+    @Override public void enter(Hashtable<Object, Object> enterParams) {
         this.entity = (Entity) enterParams.get("entity");
 
         Util.log("PlayerTestState.enter()");
         Util.log("Entity: " + this.entity);
     }
 
-    public void update() {
+    @Override public void update() {
         Util.log("PlayerTestState.update()");
     }
 
-    public void exit() {
+    @Override public void exit() {
         Util.log("PlayerTestState.exit()");
     }
 }
