@@ -1,18 +1,18 @@
 package states;
 
-import states.game.ExitState;
-import states.game.PlayState;
-import states.game.StartState;
+import states.game.GameExitState;
+import states.game.GamePlayState;
+import states.game.GameStartState;
 
 public class StateFactory {
     public static BaseState createState(StateNames stateName) {
         switch (stateName) {
-            case Start:
-                return new StartState();
-            case Play:
-                return new PlayState();
-            case Exit:
-                return new ExitState();
+            case GameStart:
+                return new GameStartState();
+            case GamePlay:
+                return new GamePlayState();
+            case GameExit:
+                return new GameExitState();
             default:
                 return new BaseState();
         }

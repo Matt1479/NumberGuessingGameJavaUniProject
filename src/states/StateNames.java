@@ -2,9 +2,9 @@ package states;
 
 public enum StateNames {
     // Game
-    Start,
-    Play,
-    Exit,
+    GameStart,
+    GamePlay,
+    GameExit,
     // Entity
     EntityBase,
     // Player

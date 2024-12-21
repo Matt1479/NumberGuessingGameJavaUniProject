@@ -7,7 +7,7 @@ import states.BaseState;
 import states.StateNames;
 import states.Util;
 
-public class ExitState extends BaseState {
+public class GameExitState extends BaseState {
     // Methods
     public void enter(Hashtable<Object, Object> enterParams) {
         this.in = (Scanner) enterParams.get("in");

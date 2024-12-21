@@ -10,7 +10,7 @@ import states.Util;
 import states.entity.player.Player;
 import states.entity.player.PlayerBaseState;
 
-public class PlayState extends BaseState {
+public class GamePlayState extends BaseState {
     Player p;
 
     // Methods

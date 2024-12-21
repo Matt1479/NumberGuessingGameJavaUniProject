@@ -7,7 +7,7 @@ import states.BaseState;
 import states.StateMachine;
 import states.StateNames;
 
-public class StartState extends BaseState {
+public class GameStartState extends BaseState {
 
     // Methods
     public void loadParams(Hashtable<Object, Object> enterParams) {
@@ -21,7 +21,7 @@ public class StartState extends BaseState {
         this.loadParams(enterParams);
 
         // Change to PlayState, passing (Scanner) in, for now
-        this.gStateMachine.change(StateNames.Play, new Hashtable<>() {{
+        this.gStateMachine.change(StateNames.GamePlay, new Hashtable<>() {{
             put("in", in);
         }});
 

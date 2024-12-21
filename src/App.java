@@ -30,7 +30,7 @@ public class App {
         }
 
         gStateMachine = new StateMachine(states);
-        gStateMachine.change(StateNames.Start, new Hashtable<Object, Object>() {{
+        gStateMachine.change(StateNames.GameStart, new Hashtable<Object, Object>() {{
             put("in", in);
         }});
     }
