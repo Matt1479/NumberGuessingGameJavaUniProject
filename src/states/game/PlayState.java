@@ -7,52 +7,39 @@ import states.BaseState;
 import states.StateMachine;
 import states.StateNames;
 import states.Util;
+import states.entity.player.Player;
+import states.entity.player.PlayerBaseState;
 
 public class PlayState extends BaseState {
-    // Constructor (init)
-    // public PlayState() { };
+    Player p;
 
     // Methods
-    public void enter(Hashtable<Object, Object> enterParams) {
+    public void loadParams(Hashtable<Object, Object> enterParams) {
         this.enterParams = enterParams;
         this.gStateMachine = (StateMachine) enterParams.get("gStateMachine");
         this.in = (Scanner) enterParams.get("in");
         this.stateName = (StateNames) enterParams.get("stateName");
-
-        Util.log("\n" + this.stateName.toString().toLowerCase() + "State.enter()");
-
-        StateNames.displayOptions(this.stateName);
     }
 
-    public void exit() {
-        Util.log(this.stateName.toString().toLowerCase() + "State.exit()");
+    @Override public void enter(Hashtable<Object, Object> enterParams) {
+        this.loadParams(enterParams);
+
+        // this.e = new Entity(null);
+        // this.e.addState(StateNames.EntityBase, new EntityBaseState());
+        // this.e.changeState(StateNames.EntityBase, new Hashtable<>() {{
+        //     put("entity", e);
+        // }});
+
+        this.p = new Player(null);
+        this.p.addState(StateNames.PlayerBase, new PlayerBaseState());
+        this.p.changeState(StateNames.PlayerBase, new Hashtable<>() {{
+            put("entity", p);
+        }});
     }
 
-    public void update() {
-        Util.log(this.stateName.toString().toLowerCase() + "State.update()");
-        int choice = Util.getInt(this.in, "Your choice: ");
+    @Override public void exit() {}
 
-        // Make sure the user's choice is valid
-        if (choice < 0 || choice >= StateNames.values().length || choice == ((StateNames) this.stateName).ordinal()) {
-            Util.log("Invalid choice. Please try again.");
-            return;
-        }
-
-        StateNames selectedState = StateNames.values()[choice];
-
-        switch (selectedState) {
-            case Start:
-                this.gStateMachine.change(StateNames.Start, new Hashtable<>() {{
-                    put("in", in);
-                }});
-                break;
-            case Exit:
-                this.gStateMachine.change(StateNames.Exit, new Hashtable<>() {{
-                    put("in", in);
-                }});
-                break;
-            default:
-                break;
-        }
+    @Override public void update() {
+        this.p.update();
     }
 }
