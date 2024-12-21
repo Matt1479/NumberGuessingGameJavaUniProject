@@ -1,4 +1,5 @@
 package states;
+import java.util.List;
 import java.util.Scanner;
 
 public class Util {
@@ -30,5 +31,9 @@ public class Util {
                 log("Invalid input. Please try again.");
             }
         }
+    }
+
+    public static boolean listContains(Object target, List<Object> listOfObjects) {
+        return listOfObjects.contains(target.toString().toLowerCase());
     }
 }

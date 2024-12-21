@@ -10,6 +10,7 @@ import states.StateNames;
 public class Entity {
     protected Hashtable<Object, Object> initParams;
     protected StateMachine stateMachine;
+    public Hashtable<Object, Object> data = new Hashtable<>();
 
     // Init/Constructor
     @SuppressWarnings("unchecked")

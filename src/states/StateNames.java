@@ -8,7 +8,11 @@ public enum StateNames {
     // Entity
     EntityBase,
     // Player
-    PlayerBase;
+    PlayerBase,
+    PlayerIdle,
+    PlayerGuessing,
+    PlayerLoad,
+    PlayerSave;
 
     public static void displayOptions(StateNames doNotDisplay) {
         int i = 0;
