@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 import states.BaseState;
 import states.StateNames;
-import states.Util;
 import states.entity.Entity;
 
 public class GameExitState extends BaseState {

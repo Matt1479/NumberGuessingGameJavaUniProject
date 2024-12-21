@@ -33,7 +33,16 @@ public class PlayerGuessingState extends EntityBaseState {
 
         if (this.entity.data.containsKey("name")) {
             Util.log("\nHello, " + this.entity.data.get("name") + "!");
+            
+            if (this.entity.data.containsKey("hasWon")) {
+                if (this.entity.data.get("hasWon").toString().equals("true")) {
+                    Util.log("You have won the last time!");
+                } else {
+                    Util.log("You haven't won the last time.");
+                }
+            }
         }
+
         Util.log("Welcome to the guessing game! You have " + playerChances + " chances.\n");
     }
 
@@ -63,6 +72,8 @@ public class PlayerGuessingState extends EntityBaseState {
         Random r = this.seed == -1 ? new Random() : new Random(seed);
         // Pseudo-randomly generate target number
         int target = this.start + r.nextInt(this.range + 1 - this.start);
+
+        this.entity.data.put("target", target);
         
         for (int i = 0; i < n; i++) {    
             int guess = Util.getInt(in, "What is your guess: ");
