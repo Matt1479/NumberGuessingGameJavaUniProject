@@ -1,5 +1,7 @@
 package states;
 
+import utility.Util;
+
 public enum StateNames {
     // Game
     GameStart,

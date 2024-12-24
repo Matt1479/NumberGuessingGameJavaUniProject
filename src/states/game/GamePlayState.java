@@ -7,9 +7,10 @@ import states.BaseState;
 import states.DataKeys;
 import states.StateMachine;
 import states.StateNames;
+import states.entity.EntityDataKeys;
 import states.entity.player.Player;
-import states.entity.player.PlayerDataKeys;
 import states.entity.player.PlayerStateFactory;
+import utility.Constants;
 
 public class GamePlayState extends BaseState {
     Player p;
@@ -50,11 +51,11 @@ public class GamePlayState extends BaseState {
         this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
             put(DataKeys.entity, p);
             put(DataKeys.in, in);
-            put(PlayerDataKeys.start, 0);
-            put(PlayerDataKeys.range, 100);
-            put(PlayerDataKeys.seed, -1);
+            put(EntityDataKeys.start, Constants.START);
+            put(EntityDataKeys.range, Constants.RANGE);
+            put(EntityDataKeys.seed, Constants.SEED);
             // Player data
-            put(PlayerDataKeys.chances, 10);
+            put(EntityDataKeys.chances, Constants.CHANCES);
         }});
     }
 

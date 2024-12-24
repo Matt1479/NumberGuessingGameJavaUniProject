@@ -7,9 +7,11 @@ import java.util.Hashtable;
 import java.util.Scanner;
 
 import states.DataKeys;
-import states.Util;
 import states.entity.Entity;
 import states.entity.EntityBaseState;
+import states.entity.EntityDataKeys;
+import utility.Constants;
+import utility.Util;
 
 public class PlayerLoadState extends EntityBaseState {
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -22,7 +24,7 @@ public class PlayerLoadState extends EntityBaseState {
 
     public void loadPlayerData() {
         String name = Util.getString(in, "What is your name: ");
-        name = name.equals("") ? "default" : name;
+        name = name.equals("") ? Constants.DEFAULT_NAME : name;
 
         Path filePath = Paths.get("./" + name + ".txt");
         File f = new File(filePath.toString());
@@ -40,12 +42,12 @@ public class PlayerLoadState extends EntityBaseState {
             }
 
             // Add this lastly to overwrite whatever was in the file
-            this.entity.data.put(PlayerDataKeys.newPlayer, false);
+            this.entity.data.put(EntityDataKeys.newPlayer, false);
         } else {
             // Player/file does not exist
-            this.entity.data.put(PlayerDataKeys.name, name);
-            this.entity.data.put(PlayerDataKeys.newPlayer, true);
-            this.entity.data.put("leastTries", 10);
+            this.entity.data.put(EntityDataKeys.name, name);
+            this.entity.data.put(EntityDataKeys.newPlayer, true);
+            this.entity.data.put(EntityDataKeys.leastTries, Constants.START);
         }
     }
 }

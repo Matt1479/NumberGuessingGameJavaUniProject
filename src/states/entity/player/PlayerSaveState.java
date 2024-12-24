@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.Scanner;
 
 import states.DataKeys;
-import states.Util;
 import states.entity.Entity;
 import states.entity.EntityBaseState;
+import states.entity.EntityDataKeys;
+import utility.Constants;
+import utility.Util;
 
 public class PlayerSaveState extends EntityBaseState {
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -27,10 +29,10 @@ public class PlayerSaveState extends EntityBaseState {
 
     public boolean savePlayerData() {
         Path filePath;
-        if (this.entity.data.containsKey(PlayerDataKeys.name)) {
-            filePath = Paths.get("./" + this.entity.data.get(PlayerDataKeys.name) + ".txt");
+        if (this.entity.data.containsKey(EntityDataKeys.name)) {
+            filePath = Paths.get("./" + this.entity.data.get(EntityDataKeys.name) + ".txt");
         } else {
-            filePath = Paths.get("./default.txt");
+            filePath = Paths.get("./" + Constants.DEFAULT_NAME + ".txt");
         }
         File f = new File(filePath.toString());
 

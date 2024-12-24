@@ -19,10 +19,10 @@ public class Entity {
 
         if (initParams != null) {
             // If states are passed in
-            if (initParams.containsKey("states")) {
+            if (initParams.containsKey(EntityDataKeys.states)) {
                 // Initialize StateMachine with those states
                 this.stateMachine = new StateMachine(
-                    (Hashtable<StateNames, BaseState>) initParams.get("states"));
+                    (Hashtable<StateNames, BaseState>) initParams.get(EntityDataKeys.states));
             } else {
                 this.stateMachine = new StateMachine(new Hashtable<>());
             }

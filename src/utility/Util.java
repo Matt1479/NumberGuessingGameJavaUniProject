@@ -1,4 +1,5 @@
-package states;
+package utility;
+
 import java.util.List;
 import java.util.Scanner;
 
