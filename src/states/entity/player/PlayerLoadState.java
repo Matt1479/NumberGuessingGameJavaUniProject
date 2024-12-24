@@ -27,8 +27,6 @@ public class PlayerLoadState extends EntityBaseState {
         Path filePath = Paths.get("./" + name + ".txt");
         File f = new File(filePath.toString());
 
-        this.entity.data.put("name", name);
-
         // If a player (file) exists already
         if (f.exists()) {
             // Try reading data from file
@@ -40,11 +38,11 @@ public class PlayerLoadState extends EntityBaseState {
             } catch (Exception e) {
                 Util.log("Error reading from file: " + e.getMessage());
             }
-        }
 
-        if (this.entity.data.containsKey("newPlayer")) {
+            // Add this lastly to overwrite whatever was in the file
             this.entity.data.put("newPlayer", false);
         } else {
+            // Player/file does not exist
             this.entity.data.put("newPlayer", true);
         }
     }
