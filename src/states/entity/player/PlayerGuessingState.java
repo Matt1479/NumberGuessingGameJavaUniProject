@@ -54,7 +54,7 @@ public class PlayerGuessingState extends EntityBaseState {
 
             String choice = Util.getString(this.in, "Do you want to start over (y/n): ");
             if (Util.listContains(choice, Arrays.asList("yes", "y"))) {
-                this.playerLeastTries = Constants.START;
+                this.playerLeastTries = Constants.CHANCES;
                 this.entity.data.put(EntityDataKeys.leastTries, this.playerLeastTries);
             }
         }
