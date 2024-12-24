@@ -78,7 +78,15 @@ public class PlayerGuessingState extends EntityBaseState {
         this.entity.data.put(EntityDataKeys.chances, playerChances);
         this.entity.data.put(EntityDataKeys.tries, playerTries);
 
-        // Change states
+        // Change Program's state to ProgramIdle in TIME_WAIT seconds
+        try {
+            Util.log("\nReturning in " + (Constants.TIME_WAIT_TO_RETURN / 1000.00) + " seconds...\n");
+            Thread.sleep(Constants.TIME_WAIT_TO_RETURN);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        // Change Player's state to PlayerIdle
         this.entity.changeState(StateNames.PlayerIdle, new Hashtable<>() {{
             put(DataKeys.entity, entity);
             put(DataKeys.in, in);

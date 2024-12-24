@@ -14,7 +14,13 @@ public enum StateNames {
     PlayerIdle,
     PlayerGuessing,
     PlayerLoad,
-    PlayerSave;
+    PlayerSave,
+    // Program
+    ProgramBase,
+    ProgramIdle,
+    ProgramGuessing,
+    ProgramLoad,
+    ProgramSave;
 
     public static void displayOptions(StateNames doNotDisplay) {
         int i = 0;

@@ -6,19 +6,27 @@ import java.util.Scanner;
 import states.BaseState;
 import states.DataKeys;
 import states.StateNames;
-import states.entity.Entity;
+import states.entity.player.Player;
+import states.entity.program.Program;
 
 public class GameExitState extends BaseState {
-    private Entity entity;
+    private Player p;
+    private Program program;
 
     // Methods
     public void enter(Hashtable<Object, Object> enterParams) {
-        this.entity = (Entity) enterParams.get(DataKeys.entity);
+        this.p = (Player) enterParams.get(DataKeys.entity);
+        this.program = (Program) enterParams.get("program");
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
 
-        this.entity.changeState(StateNames.PlayerSave, new Hashtable<>() {{
-            put(DataKeys.entity, entity);
+        this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
+            put(DataKeys.entity, p);
+            put(DataKeys.in, in);
+        }});
+
+        this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
+            put(DataKeys.entity, program);
             put(DataKeys.in, in);
         }});
 
