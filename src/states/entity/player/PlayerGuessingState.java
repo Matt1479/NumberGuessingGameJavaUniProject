@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import java.util.Random;
 import java.util.Scanner;
 
-
+import states.DataKeys;
 import states.StateNames;
 import states.Util;
 import states.entity.EntityBaseState;
@@ -23,25 +23,26 @@ public class PlayerGuessingState extends EntityBaseState {
     // Keeps track of the least tries it took a Player to win
     private int playerLeastTries;
     // Whether we want to greet the player and log their information...
-    private boolean greetPlayer = false;
+    private boolean greetPlayer = true;
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
         this.enterParams = enterParams;
-        this.entity = (Player) enterParams.get("entity");
-        this.in = (Scanner) enterParams.get("in");
-        this.start = (int) enterParams.get("start");
-        this.range = (int) enterParams.get("range");
-        this.seed = (int) enterParams.get("seed");
+        this.entity = (Player) enterParams.get(DataKeys.entity);
+        this.in = (Scanner) enterParams.get(DataKeys.in);
 
-        this.playerChances = (int) enterParams.get("chances");
+        this.start = (int) enterParams.get(PlayerDataKeys.start);
+        this.range = (int) enterParams.get(PlayerDataKeys.range);
+        this.seed = (int) enterParams.get(PlayerDataKeys.seed);
+
+        this.playerChances = (int) enterParams.get(PlayerDataKeys.chances);
         this.playerLeastTries = Integer.parseInt(this.entity.data.get("leastTries").toString());
         this.playerTries = 0;
 
-        if (this.entity.data.get("newPlayer").equals(false) && greetPlayer) {
-            Util.log("\nHello, " + this.entity.data.get("name") + "!");
+        if (this.entity.data.get(PlayerDataKeys.newPlayer).equals(false) && greetPlayer) {
+            Util.log("\nHello, " + this.entity.data.get(PlayerDataKeys.name) + "!");
 
-            if (this.entity.data.containsKey("hasWon")) {
-                if (this.entity.data.get("hasWon").toString().equals("true")) {
+            if (this.entity.data.containsKey(PlayerDataKeys.hasWon)) {
+                if (this.entity.data.get(PlayerDataKeys.hasWon).toString().equals("true")) {
                     Util.log("You have won the last time!");
                 } else {
                     Util.log("You haven't won the last time.");
@@ -52,6 +53,7 @@ public class PlayerGuessingState extends EntityBaseState {
             String choice = Util.getString(this.in, "Do you want to start over (y/n): ");
             if (Util.listContains(choice, Arrays.asList("yes", "y"))) {
                 this.playerLeastTries = 10;
+                this.entity.data.put("leastTries", this.playerLeastTries);
             }
         }
 
@@ -60,24 +62,24 @@ public class PlayerGuessingState extends EntityBaseState {
 
     @Override public void update() {
         if (this.guess(this.playerChances)) {
-            this.entity.data.put("hasWon", true);
+            this.entity.data.put(PlayerDataKeys.hasWon, true);
             
             // If player did better than before
             if (this.playerTries < this.playerLeastTries) {
                 this.entity.data.put("leastTries", this.playerTries);
             }
         } else {
-            this.entity.data.put("hasWon", false);
+            this.entity.data.put(PlayerDataKeys.hasWon, false);
         }
         
         // Set necessary data
-        this.entity.data.put("chances", playerChances);
-        this.entity.data.put("tries", playerTries);
+        this.entity.data.put(PlayerDataKeys.chances, playerChances);
+        this.entity.data.put(PlayerDataKeys.tries, playerTries);
 
         // Change states
         this.entity.changeState(StateNames.PlayerIdle, new Hashtable<>() {{
-            put("entity", entity);
-            put("in", in);
+            put(DataKeys.entity, entity);
+            put(DataKeys.in, in);
         }});
     }
 
@@ -90,7 +92,7 @@ public class PlayerGuessingState extends EntityBaseState {
         // Pseudo-randomly generate target number
         int target = this.start + r.nextInt(this.range + 1 - this.start);
 
-        this.entity.data.put("target", target);
+        this.entity.data.put(PlayerDataKeys.target, target);
         
         for (int i = 0; i < n; i++) {    
             int guess = Util.getInt(in, "What is your guess: ");

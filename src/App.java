@@ -2,6 +2,7 @@ import java.util.Hashtable;
 import java.util.Scanner;
 
 import states.BaseState;
+import states.DataKeys;
 import states.StateFactory;
 import states.StateMachine;
 import states.StateNames;
@@ -31,7 +32,7 @@ public class App {
 
         gStateMachine = new StateMachine(states);
         gStateMachine.change(StateNames.GameStart, new Hashtable<Object, Object>() {{
-            put("in", in);
+            put(DataKeys.in, in);
         }});
     }
 

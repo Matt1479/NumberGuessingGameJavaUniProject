@@ -6,15 +6,15 @@ import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Scanner;
 
-
+import states.DataKeys;
 import states.Util;
 import states.entity.Entity;
 import states.entity.EntityBaseState;
 
 public class PlayerLoadState extends EntityBaseState {
     @Override public void enter(Hashtable<Object, Object> enterParams) {
-        this.entity = (Entity) enterParams.get("entity");
-        this.in = (Scanner) enterParams.get("in");
+        this.entity = (Entity) enterParams.get(DataKeys.entity);
+        this.in = (Scanner) enterParams.get(DataKeys.in);
 
         // Load player data from file, if it exists
         this.loadPlayerData();
@@ -40,11 +40,11 @@ public class PlayerLoadState extends EntityBaseState {
             }
 
             // Add this lastly to overwrite whatever was in the file
-            this.entity.data.put("newPlayer", false);
+            this.entity.data.put(PlayerDataKeys.newPlayer, false);
         } else {
             // Player/file does not exist
-            this.entity.data.put("name", name);
-            this.entity.data.put("newPlayer", true);
+            this.entity.data.put(PlayerDataKeys.name, name);
+            this.entity.data.put(PlayerDataKeys.newPlayer, true);
             this.entity.data.put("leastTries", 10);
         }
     }

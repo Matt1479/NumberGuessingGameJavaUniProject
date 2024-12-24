@@ -38,8 +38,8 @@ public class StateMachine {
 
         // Add gStateMachine and stateName to enterParams dictionary
         if (enterParams != null) {
-            enterParams.put("gStateMachine", this);
-            enterParams.put("stateName", stateName);
+            enterParams.put(DataKeys.gStateMachine, this);
+            enterParams.put(DataKeys.stateName, stateName);
         }
 
         // Enter new state

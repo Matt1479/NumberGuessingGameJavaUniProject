@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.Scanner;
 
 import states.BaseState;
+import states.DataKeys;
 import states.StateMachine;
 import states.StateNames;
 
@@ -12,9 +13,9 @@ public class GameStartState extends BaseState {
     // Methods
     public void loadParams(Hashtable<Object, Object> enterParams) {
         this.enterParams = enterParams;
-        this.gStateMachine = (StateMachine) enterParams.get("gStateMachine");
-        this.in = (Scanner) enterParams.get("in");
-        this.stateName = (StateNames) enterParams.get("stateName");
+        this.gStateMachine = (StateMachine) enterParams.get(DataKeys.gStateMachine);
+        this.in = (Scanner) enterParams.get(DataKeys.in);
+        this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -22,7 +23,7 @@ public class GameStartState extends BaseState {
 
         // Change to PlayState, passing (Scanner) in, for now
         this.gStateMachine.change(StateNames.GamePlay, new Hashtable<>() {{
-            put("in", in);
+            put(DataKeys.in, in);
         }});
 
         // StateNames.displayOptions(this.stateName);
@@ -48,12 +49,12 @@ public class GameStartState extends BaseState {
         switch (selectedState) {
             case Play:
                 this.gStateMachine.change(StateNames.Play, new Hashtable<>() {{
-                    put("in", in);
+                    put(DataKeys.in, in);
                 }});
                 break;
             case Exit:
                 this.gStateMachine.change(StateNames.Exit, new Hashtable<>() {{
-                    put("in", in);
+                    put(DataKeys.in, in);
                 }});
                 break;
             default:

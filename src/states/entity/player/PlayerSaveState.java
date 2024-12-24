@@ -9,15 +9,15 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Scanner;
 
-
+import states.DataKeys;
 import states.Util;
 import states.entity.Entity;
 import states.entity.EntityBaseState;
 
 public class PlayerSaveState extends EntityBaseState {
     @Override public void enter(Hashtable<Object, Object> enterParams) {
-        this.entity = (Entity) enterParams.get("entity");
-        this.in = (Scanner) enterParams.get("in");
+        this.entity = (Entity) enterParams.get(DataKeys.entity);
+        this.in = (Scanner) enterParams.get(DataKeys.in);
 
         // Save player data to file
         if (!this.savePlayerData()) {
@@ -27,8 +27,8 @@ public class PlayerSaveState extends EntityBaseState {
 
     public boolean savePlayerData() {
         Path filePath;
-        if (this.entity.data.containsKey("name")) {
-            filePath = Paths.get("./" + this.entity.data.get("name") + ".txt");
+        if (this.entity.data.containsKey(PlayerDataKeys.name)) {
+            filePath = Paths.get("./" + this.entity.data.get(PlayerDataKeys.name) + ".txt");
         } else {
             filePath = Paths.get("./default.txt");
         }
