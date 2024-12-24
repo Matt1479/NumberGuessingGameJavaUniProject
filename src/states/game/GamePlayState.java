@@ -1,6 +1,5 @@
 package states.game;
 
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Scanner;
 
@@ -51,10 +50,11 @@ public class GamePlayState extends BaseState {
         this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
             put("entity", p);
             put("in", in);
-            put("chances", 10);
             put("start", 0);
             put("range", 100);
             put("seed", -1);
+            // Player data
+            put("chances", 10);
         }});
     }
 
@@ -63,25 +63,30 @@ public class GamePlayState extends BaseState {
     @Override public void update() {
         this.p.update();
 
-        String choice = Util.getString(this.in, "Do you want to try again (y/n): ");
-        if (Util.listContains(choice, Arrays.asList("yes", "y"))) {
-            this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
-                // Entity(Player), Scanner
-                put("entity", p);
-                put("in", in);
-                // Random's params
-                put("start", 0);
-                put("range", 100);
-                put("seed", -1);
-                // Player data
-                put("chances", 10);
-            }});
-        } else if (Util.listContains(choice, Arrays.asList("no", "n"))) {
-            // Change the game's state to GameExitState
-            this.gStateMachine.change(StateNames.GameExit, new Hashtable<>() {{
-                put("entity", p);
-                put("in", in);
-            }});
-        }
+        // String choice = Util.getString(this.in, "Do you want to try again (y/n): ");
+        // if (Util.listContains(choice, Arrays.asList("yes", "y"))) {
+        //     this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+        //         // Entity(Player), Scanner
+        //         put("entity", p);
+        //         put("in", in);
+        //         // Random's params
+        //         put("start", 0);
+        //         put("range", 100);
+        //         put("seed", -1);
+        //         // Player data
+        //         put("chances", 10);
+        //     }});
+        // } else if (Util.listContains(choice, Arrays.asList("no", "n"))) {
+        //     // Change the game's state to GameExitState
+        //     this.gStateMachine.change(StateNames.GameExit, new Hashtable<>() {{
+        //         put("entity", p);
+        //         put("in", in);
+        //     }});
+        // }
+
+        this.gStateMachine.change(StateNames.GameExit, new Hashtable<>() {{
+            put("entity", p);
+            put("in", in);
+        }});
     }
 }

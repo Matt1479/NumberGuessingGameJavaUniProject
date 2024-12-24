@@ -1,5 +1,6 @@
 package states.entity.player;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.Scanner;
@@ -19,6 +20,10 @@ public class PlayerGuessingState extends EntityBaseState {
 
     // Keeps track of how many tries it took the user to guess the number, if they did
     private int playerTries;
+    // Keeps track of the least tries it took a Player to win
+    private int playerLeastTries;
+    // Whether we want to greet the player and log their information...
+    private boolean greetPlayer = false;
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
         this.enterParams = enterParams;
@@ -29,11 +34,12 @@ public class PlayerGuessingState extends EntityBaseState {
         this.seed = (int) enterParams.get("seed");
 
         this.playerChances = (int) enterParams.get("chances");
+        this.playerLeastTries = Integer.parseInt(this.entity.data.get("leastTries").toString());
         this.playerTries = 0;
 
-        if (this.entity.data.containsKey("name")) {
+        if (this.entity.data.get("newPlayer").equals(false) && greetPlayer) {
             Util.log("\nHello, " + this.entity.data.get("name") + "!");
-            
+
             if (this.entity.data.containsKey("hasWon")) {
                 if (this.entity.data.get("hasWon").toString().equals("true")) {
                     Util.log("You have won the last time!");
@@ -41,14 +47,25 @@ public class PlayerGuessingState extends EntityBaseState {
                     Util.log("You haven't won the last time.");
                 }
             }
+            Util.log("Your least amount of tries to win: " + this.playerLeastTries);
+
+            String choice = Util.getString(this.in, "Do you want to start over (y/n): ");
+            if (Util.listContains(choice, Arrays.asList("yes", "y"))) {
+                this.playerLeastTries = 10;
+            }
         }
 
-        Util.log("Welcome to the guessing game! You have " + playerChances + " chances.\n");
+        Util.log("\nWelcome to the guessing game! You have " + playerChances + " chances.\n");
     }
 
     @Override public void update() {
         if (this.guess(this.playerChances)) {
             this.entity.data.put("hasWon", true);
+            
+            // If player did better than before
+            if (this.playerTries < this.playerLeastTries) {
+                this.entity.data.put("leastTries", this.playerTries);
+            }
         } else {
             this.entity.data.put("hasWon", false);
         }

@@ -43,7 +43,9 @@ public class PlayerLoadState extends EntityBaseState {
             this.entity.data.put("newPlayer", false);
         } else {
             // Player/file does not exist
+            this.entity.data.put("name", name);
             this.entity.data.put("newPlayer", true);
+            this.entity.data.put("leastTries", 10);
         }
     }
 }
