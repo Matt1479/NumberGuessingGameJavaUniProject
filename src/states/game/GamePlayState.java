@@ -81,6 +81,7 @@ public class GamePlayState extends BaseState {
                 this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                     put(DataKeys.entity, p);
                     put(DataKeys.in, in);
+                    put(DataKeys.settings, settings);
                 }});
 
                 // Change to PlayerGuessingState
@@ -100,6 +101,7 @@ public class GamePlayState extends BaseState {
                 this.program.changeState(StateNames.ProgramLoad, new Hashtable<>() {{
                     put(DataKeys.entity, program);
                     put(DataKeys.in, in);
+                    put(DataKeys.settings, settings);
                 }});
 
                 // Change to ProgramGuessingState
@@ -119,11 +121,13 @@ public class GamePlayState extends BaseState {
                 this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                     put(DataKeys.entity, p);
                     put(DataKeys.in, in);
+                    put(DataKeys.settings, settings);
                 }});
                 // Load program data (if it exists)
                 this.program.changeState(StateNames.ProgramLoad, new Hashtable<>() {{
                     put(DataKeys.entity, program);
                     put(DataKeys.in, in);
+                    put(DataKeys.settings, settings);
                 }});
                 Util.log("", true);
 
@@ -263,11 +267,13 @@ public class GamePlayState extends BaseState {
                 this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                     put(DataKeys.entity, p);
                     put(DataKeys.in, in);
+                    put(DataKeys.settings, settings);
                 }});
                 // Load program data (if it exists)
                 this.program.changeState(StateNames.ProgramLoad, new Hashtable<>() {{
                     put(DataKeys.entity, program);
                     put(DataKeys.in, in);
+                    put(DataKeys.settings, settings);
                 }});
             
                 Util.log('\n' + "player's number of wins: " + this.p.data.get("numWins"));
