@@ -38,11 +38,11 @@ public class PlayerGuessingState extends EntityBaseState {
         this.entity = (Player) enterParams.get(DataKeys.entity);
         this.in = (Scanner) enterParams.get(DataKeys.in);
 
-        this.start = (int) enterParams.get(EntityDataKeys.start);
-        this.range = (int) enterParams.get(EntityDataKeys.range);
-        this.seed = (int) enterParams.get(EntityDataKeys.seed);
+        this.start = Integer.parseInt(enterParams.get(EntityDataKeys.start).toString());
+        this.range = Integer.parseInt(enterParams.get(EntityDataKeys.range).toString());
+        this.seed = Integer.parseInt(enterParams.get(EntityDataKeys.seed).toString());
 
-        this.playerChances = (int) enterParams.get(EntityDataKeys.chances);
+        this.playerChances = Integer.parseInt(enterParams.get(EntityDataKeys.chances).toString());
         this.playerLeastTries = Integer.parseInt(this.entity.data.get(EntityDataKeys.leastTries).toString());
 
         this.mixed = enterParams.containsKey(EntityDataKeys.guessParams);
@@ -112,9 +112,25 @@ public class PlayerGuessingState extends EntityBaseState {
         } else {
             this.entity.data.put(EntityDataKeys.chances, playerChances);
             this.entity.data.put(EntityDataKeys.tries, playerTries);
+
+            // If Player has won, increment the number of wins, else increment the number of losses
+            if (this.entity.data.get(EntityDataKeys.hasWon).equals(true)) {
+                this.entity.data.put("numWins",
+                    (Integer.parseInt(this.entity.data.get("numWins").toString()) + 1));
+            } else {
+                this.entity.data.put("numLosses",
+                    (Integer.parseInt(this.entity.data.get("numLosses").toString()) + 1));
+            }
+    
+            // Save data: change Player's's state to PlayerSave
+            this.entity.changeState(StateNames.PlayerSave, new Hashtable<>() {{
+                put(DataKeys.entity, entity);
+                put(DataKeys.in, in);
+            }});
         }
 
-        // Change Program's state to ProgramIdle in TIME_WAIT seconds (or half of that if mixed)
+
+        // Change Player's state to PlayerIdle in TIME_WAIT seconds (or half of that if mixed)
         try {
             Util.log(this.mixed
                 ? "+--------------------------------------------------------+\n"
@@ -166,7 +182,7 @@ public class PlayerGuessingState extends EntityBaseState {
 
     public boolean guessOnce(Hashtable<Object, Object> guessParams) {
         // Unpack
-        int target = (int) guessParams.get(EntityDataKeys.playerGuessTarget);
+        int target = Integer.parseInt(guessParams.get(EntityDataKeys.playerGuessTarget).toString());
 
         // Update data
         this.entity.data.put(EntityDataKeys.target, target);

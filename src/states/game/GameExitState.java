@@ -30,7 +30,6 @@ public class GameExitState extends BaseState {
             this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
                 put(DataKeys.entity, p);
                 put(DataKeys.in, in);
-                put(DataKeys.settings, settings);
             }});
         }
 
@@ -40,7 +39,6 @@ public class GameExitState extends BaseState {
             this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
                 put(DataKeys.entity, program);
                 put(DataKeys.in, in);
-                put(DataKeys.settings, settings);
             }});
         }
 

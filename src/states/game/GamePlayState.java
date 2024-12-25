@@ -182,9 +182,10 @@ public class GamePlayState extends BaseState {
                                     program.data.containsKey(EntityDataKeys.start)
                                     &&
                                     program.data.containsKey(EntityDataKeys.range)
-                                    ? (int) program.data.get(EntityDataKeys.start)
-                                        + r.nextInt((int) program.data.get(EntityDataKeys.range)
-                                            + 1 - (int) program.data.get(EntityDataKeys.start))
+                                    ? Integer.parseInt(program.data.get(EntityDataKeys.start).toString())
+                                        + r.nextInt(
+                                            Integer.parseInt(program.data.get(EntityDataKeys.range).toString())
+                                            + 1 - Integer.parseInt(program.data.get(EntityDataKeys.start).toString()))
                                     : settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart()));
                             }});
                         }});
@@ -213,6 +214,11 @@ public class GamePlayState extends BaseState {
                     if (playerTries < playerLeastTries) {
                         this.p.data.put(EntityDataKeys.leastTries, playerTries);
                     }
+
+                    this.p.data.put("numWins",
+                        (Integer.parseInt(this.p.data.get("numWins").toString()) + 1));
+                    this.program.data.put("numLosses",
+                    (Integer.parseInt(this.program.data.get("numLosses").toString()) + 1));
                 } else {
                     Util.log("Program wins!");
 
@@ -221,12 +227,54 @@ public class GamePlayState extends BaseState {
                     if (programTries < programLeastTries) {
                         this.program.data.put(EntityDataKeys.leastTries, programTries);
                     }
+
+                    this.program.data.put("numWins",
+                    (Integer.parseInt(this.program.data.get("numWins").toString()) + 1));
+                    this.p.data.put("numLosses",
+                    (Integer.parseInt(this.p.data.get("numLosses").toString()) + 1));
                 }
+
+                // Save data: change Player's's state to PlayerSave
+                this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
+                    put(DataKeys.entity, p);
+                    put(DataKeys.in, in);
+                }});
+                // Save data: change Program's's state to ProgramSave
+                this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
+                    put(DataKeys.entity, program);
+                    put(DataKeys.in, in);
+                }});
+
+                // Change Player's state to PlayerIdle
+                this.p.changeState(StateNames.PlayerIdle, new Hashtable<>() {{
+                    put(DataKeys.entity, p);
+                    put(DataKeys.in, in);
+                }});
+                // Change Program's state to ProgramIdle
+                this.program.changeState(StateNames.ProgramIdle, new Hashtable<>() {{
+                    put(DataKeys.entity, program);
+                    put(DataKeys.in, in);
+                }});
                 
                 break;
 
             case 3:
-                Util.log("Not yet implemented.");
+                // Load player data (if it exists)
+                this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
+                    put(DataKeys.entity, p);
+                    put(DataKeys.in, in);
+                }});
+                // Load program data (if it exists)
+                this.program.changeState(StateNames.ProgramLoad, new Hashtable<>() {{
+                    put(DataKeys.entity, program);
+                    put(DataKeys.in, in);
+                }});
+            
+                Util.log('\n' + "player's number of wins: " + this.p.data.get("numWins"));
+                Util.log("player's number of losses: " + this.p.data.get("numLosses") + '\n');
+                Util.log("program's number of wins: " + this.program.data.get("numWins"));
+                Util.log("program's number of losses: " + this.program.data.get("numLosses"));
+
                 break;
 
             case 4:

@@ -53,6 +53,8 @@ public class PlayerLoadState extends EntityBaseState {
             this.entity.data.put(EntityDataKeys.name, name);
             this.entity.data.put(EntityDataKeys.newPlayer, true);
             this.entity.data.put(EntityDataKeys.leastTries, settings.getChances());
+            this.entity.data.put("numWins", 0);
+            this.entity.data.put("numLosses", 0);
         }
     }
 }
