@@ -1,6 +1,7 @@
 package states.game;
 
 import java.util.Hashtable;
+import java.util.Random;
 import java.util.Scanner;
 
 import states.BaseState;
@@ -19,6 +20,8 @@ public class GamePlayState extends BaseState {
     Player p;
     Program program;
 
+    Random r;
+
     // Methods
     public void loadParams(Hashtable<Object, Object> enterParams) {
         this.enterParams = enterParams;
@@ -27,7 +30,11 @@ public class GamePlayState extends BaseState {
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
     }
 
-    @Override public void enter(Hashtable<Object, Object> enterParams) {
+    /* Suppressing the following warnings:
+        * comparing identical expressions: once you change Constants.SEED's value, they are different
+        * unused/dead code: it is used, it depends on Constants.SEED's value
+     */
+    @Override @SuppressWarnings("all") public void enter(Hashtable<Object, Object> enterParams) {
         this.loadParams(enterParams);
 
         this.p = new Player(null);
@@ -47,6 +54,8 @@ public class GamePlayState extends BaseState {
                 this.program.addState(stateName, ProgramStateFactory.createState(stateName));
             }
         }
+
+        this.r = Constants.SEED == -1 ? new Random() : new Random(Constants.SEED);
     }
 
     @Override public void exit() {}
@@ -102,7 +111,114 @@ public class GamePlayState extends BaseState {
                 break;
         
             case 2:
-                Util.log("Not yet implemented.");
+                // Load player data (if it exists)
+                this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
+                    put(DataKeys.entity, p);
+                    put(DataKeys.in, in);
+                }});
+                // Load program data (if it exists)
+                this.program.changeState(StateNames.ProgramLoad, new Hashtable<>() {{
+                    put(DataKeys.entity, program);
+                    put(DataKeys.in, in);
+                }});
+                Util.log("", true);
+
+                int playerGuessTarget = Constants.START + r.nextInt(Constants.RANGE + 1 - Constants.START);
+                int programGuessTarget = Constants.START + r.nextInt(Constants.RANGE + 1 - Constants.START);
+                boolean isWinner = false;
+                boolean playerTurn = r.nextInt(2) == 1;
+
+                // Reset tries to 0
+                this.p.data.put(EntityDataKeys.tries, 0);
+                this.program.data.put(EntityDataKeys.tries, 0);
+                
+                while (!isWinner) {
+                    if (playerTurn) {
+                        // Change to PlayerGuessingState
+                        this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                            put(DataKeys.entity, p);
+                            put(DataKeys.in, in);
+                            put(EntityDataKeys.start, Constants.START);
+                            put(EntityDataKeys.range, Constants.RANGE);
+                            put(EntityDataKeys.seed, Constants.SEED);
+                            // Player data
+                            put(EntityDataKeys.chances, 1);
+                            put(EntityDataKeys.tries, p.data.get(EntityDataKeys.tries));
+                            // Guess params
+                            put("guessParams", new Hashtable<Object, Object>() {{
+                                put("playerGuessTarget", playerGuessTarget);
+                            }});
+                        }});
+
+                        // Update the Player's stateMachine
+                        this.p.update();
+
+                        isWinner = this.p.data.get(EntityDataKeys.hasWon).equals(true);
+                    } else {
+                        // Change to ProgramGuessingState
+                        this.program.changeState(StateNames.ProgramGuessing, new Hashtable<>() {{
+                            put(DataKeys.entity, program);
+                            put(DataKeys.in, in);
+                            put(EntityDataKeys.start,
+                                program.data.containsKey(EntityDataKeys.start)
+                                ? program.data.get(EntityDataKeys.start)
+                                : Constants.START);
+                            put(EntityDataKeys.range,
+                                program.data.containsKey(EntityDataKeys.range)
+                                ? program.data.get(EntityDataKeys.range)
+                                : Constants.RANGE);
+                            put(EntityDataKeys.seed, Constants.SEED);
+                            // Program data
+                            put(EntityDataKeys.chances, 1);
+                            put(EntityDataKeys.tries, program.data.get(EntityDataKeys.tries));
+                            // Guess params
+                            put("guessParams", new Hashtable<Object, Object>() {{
+                                put("programGuessTarget", programGuessTarget);
+                                put("programGuess",
+                                    program.data.containsKey(EntityDataKeys.start)
+                                    &&
+                                    program.data.containsKey(EntityDataKeys.range)
+                                    ? (int) program.data.get(EntityDataKeys.start)
+                                        + r.nextInt((int) program.data.get(EntityDataKeys.range)
+                                            + 1 - (int) program.data.get(EntityDataKeys.start))
+                                    : Constants.START + r.nextInt(Constants.RANGE + 1 - Constants.START));
+                            }});
+                        }});
+
+                        // Update the program's stateMachine
+                        this.program.update();
+
+                        isWinner = this.program.data.get(EntityDataKeys.hasWon).equals(true);
+                    }
+
+                    playerTurn = !playerTurn;
+                }
+
+                // Remove/reset key/value pairs
+                this.p.data.remove("guessParams");
+                this.program.data.remove("guessParams");
+                this.program.data.remove(EntityDataKeys.start);
+                this.program.data.remove(EntityDataKeys.range);
+
+                // Declare winner and set necessary data
+                if (this.p.data.get(EntityDataKeys.hasWon).equals(true)) {
+                    Util.log("Player wins!");
+
+                    int playerTries = Integer.parseInt(this.p.data.get(EntityDataKeys.tries).toString());
+                    int playerLeastTries = Integer.parseInt(this.p.data.get(EntityDataKeys.leastTries).toString());
+                    if (playerTries < playerLeastTries) {
+                        this.p.data.put(EntityDataKeys.leastTries, playerTries);
+                    }
+                } else {
+                    Util.log("Program wins!");
+
+                    int programTries = Integer.parseInt(this.program.data.get(EntityDataKeys.tries).toString());
+                    int programLeastTries = Integer.parseInt(this.program.data.get(EntityDataKeys.leastTries).toString());
+                    if (programTries < programLeastTries) {
+                        this.program.data.put(EntityDataKeys.leastTries, programTries);
+                    }
+                }
+                
                 break;
 
             case 3:
@@ -122,7 +238,7 @@ public class GamePlayState extends BaseState {
                 break;
         }
 
-        // Update all of the entities
+        // Update all of the entities (when Idle, it does nothing)
         this.p.update();
         this.program.update();
     }
