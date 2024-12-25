@@ -7,4 +7,6 @@ public interface DataKeys {
     String stateName = "stateName";
     String entity = "entity";
     String in = "in";
+
+    String settings = "settings";
 }

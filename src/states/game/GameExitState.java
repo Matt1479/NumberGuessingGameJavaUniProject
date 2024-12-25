@@ -22,7 +22,7 @@ public class GameExitState extends BaseState {
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
 
-        this.settings = (Settings) enterParams.get("settings");
+        this.settings = (Settings) enterParams.get(DataKeys.settings);
 
         if (!this.p.data.isEmpty()) {
             this.p.data.put("difficultyLevel", this.settings.getDifficultyLevel());
@@ -30,7 +30,7 @@ public class GameExitState extends BaseState {
             this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
                 put(DataKeys.entity, p);
                 put(DataKeys.in, in);
-                put("settings", settings);
+                put(DataKeys.settings, settings);
             }});
         }
 
@@ -40,7 +40,7 @@ public class GameExitState extends BaseState {
             this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
                 put(DataKeys.entity, program);
                 put(DataKeys.in, in);
-                put("settings", settings);
+                put(DataKeys.settings, settings);
             }});
         }
 

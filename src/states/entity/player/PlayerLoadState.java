@@ -21,7 +21,7 @@ public class PlayerLoadState extends EntityBaseState {
         this.entity = (Entity) enterParams.get(DataKeys.entity);
         this.in = (Scanner) enterParams.get(DataKeys.in);
 
-        this.settings = (Settings) enterParams.get("settings");
+        this.settings = (Settings) enterParams.get(DataKeys.settings);
 
         // Load player data from file, if it exists
         this.loadPlayerData();

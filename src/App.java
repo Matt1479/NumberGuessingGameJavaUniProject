@@ -34,7 +34,7 @@ public class App {
         gStateMachine = new StateMachine(states);
         gStateMachine.change(StateNames.GameStart, new Hashtable<Object, Object>() {{
             put(DataKeys.in, in);
-            put("settings", new Settings());
+            put(DataKeys.settings, new Settings());
         }});
     }
 

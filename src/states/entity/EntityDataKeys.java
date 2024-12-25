@@ -16,4 +16,10 @@ public interface EntityDataKeys {
     String tries = "tries";
     String chances = "chances";
     String leastTries = "leastTries";
+
+    // Player/Program keys
+    String guessParams = "guessParams";
+    String playerGuessTarget = "playerGuessTarget";
+    String programGuessTarget = "programGuessTarget";
+    String programGuess = "programGuess";
 }

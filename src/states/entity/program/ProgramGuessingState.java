@@ -40,7 +40,7 @@ public class ProgramGuessingState extends EntityBaseState {
         this.programChances = (int) enterParams.get(EntityDataKeys.chances);
         this.programLeastTries = Integer.parseInt(this.entity.data.get(EntityDataKeys.leastTries).toString());
 
-        this.mixed = enterParams.containsKey("guessParams");
+        this.mixed = enterParams.containsKey(EntityDataKeys.guessParams);
 
         this.programTries = this.mixed
             ? Integer.parseInt(this.entity.data.get(EntityDataKeys.tries).toString())
@@ -73,7 +73,7 @@ public class ProgramGuessingState extends EntityBaseState {
                 this.entity.data.put(EntityDataKeys.hasWon, false);
             }
         } else {
-            if (this.guessOnce((Hashtable<Object, Object>) this.enterParams.get("guessParams"))) {
+            if (this.guessOnce((Hashtable<Object, Object>) this.enterParams.get(EntityDataKeys.guessParams))) {
                 this.entity.data.put(EntityDataKeys.hasWon, true);
             } else {
                 this.entity.data.put(EntityDataKeys.hasWon, false);
@@ -159,8 +159,8 @@ public class ProgramGuessingState extends EntityBaseState {
     /* Returns true if the program guesses correctly, false otherwise */
     public boolean guessOnce(Hashtable<Object, Object> guessParams) {
         // Unpack
-        int target = (int) guessParams.get("programGuessTarget");
-        int programGuess = (int) guessParams.get("programGuess");
+        int target = (int) guessParams.get(EntityDataKeys.programGuessTarget);
+        int programGuess = (int) guessParams.get(EntityDataKeys.programGuess);
 
         // Update data
         this.entity.data.put(EntityDataKeys.target, target);

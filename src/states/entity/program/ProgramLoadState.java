@@ -10,7 +10,6 @@ import states.DataKeys;
 import states.entity.Entity;
 import states.entity.EntityBaseState;
 import states.entity.EntityDataKeys;
-import utility.Constants;
 import utility.Settings;
 import utility.Util;
 
@@ -21,7 +20,7 @@ public class ProgramLoadState extends EntityBaseState {
         this.entity = (Entity) enterParams.get(DataKeys.entity);
         this.in = (Scanner) enterParams.get(DataKeys.in);
 
-        this.settings = (Settings) enterParams.get("settings");
+        this.settings = (Settings) enterParams.get(DataKeys.settings);
 
         // Load program data from file, if it exists
         this.loadProgramData();

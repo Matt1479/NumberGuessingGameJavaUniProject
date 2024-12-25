@@ -19,7 +19,7 @@ public class GameStartState extends BaseState {
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
 
-        this.settings = (Settings) enterParams.get("settings");
+        this.settings = (Settings) enterParams.get(DataKeys.settings);
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -28,7 +28,7 @@ public class GameStartState extends BaseState {
         // Change to SettingsState, passing (Scanner) in
         this.gStateMachine.change(StateNames.GameSettings, new Hashtable<>() {{
             put(DataKeys.in, in);
-            put("settings", settings);
+            put(DataKeys.settings, settings);
         }});
     }
 

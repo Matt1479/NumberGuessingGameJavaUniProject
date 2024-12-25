@@ -13,7 +13,6 @@ import states.entity.player.Player;
 import states.entity.player.PlayerStateFactory;
 import states.entity.program.Program;
 import states.entity.program.ProgramStateFactory;
-import utility.Constants;
 import utility.Settings;
 import utility.Util;
 
@@ -32,7 +31,7 @@ public class GamePlayState extends BaseState {
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
 
-        this.settings = (Settings) enterParams.get("settings");
+        this.settings = (Settings) enterParams.get(DataKeys.settings);
     }
 
     /* Suppressing the following warnings:
@@ -150,8 +149,8 @@ public class GamePlayState extends BaseState {
                             put(EntityDataKeys.chances, 1);
                             put(EntityDataKeys.tries, p.data.get(EntityDataKeys.tries));
                             // Guess params
-                            put("guessParams", new Hashtable<Object, Object>() {{
-                                put("playerGuessTarget", playerGuessTarget);
+                            put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                put(EntityDataKeys.playerGuessTarget, playerGuessTarget);
                             }});
                         }});
 
@@ -177,9 +176,9 @@ public class GamePlayState extends BaseState {
                             put(EntityDataKeys.chances, 1);
                             put(EntityDataKeys.tries, program.data.get(EntityDataKeys.tries));
                             // Guess params
-                            put("guessParams", new Hashtable<Object, Object>() {{
-                                put("programGuessTarget", programGuessTarget);
-                                put("programGuess",
+                            put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                put(EntityDataKeys.programGuessTarget, programGuessTarget);
+                                put(EntityDataKeys.programGuess,
                                     program.data.containsKey(EntityDataKeys.start)
                                     &&
                                     program.data.containsKey(EntityDataKeys.range)
@@ -200,8 +199,8 @@ public class GamePlayState extends BaseState {
                 }
 
                 // Remove/reset key/value pairs
-                this.p.data.remove("guessParams");
-                this.program.data.remove("guessParams");
+                this.p.data.remove(EntityDataKeys.guessParams);
+                this.program.data.remove(EntityDataKeys.guessParams);
                 this.program.data.remove(EntityDataKeys.start);
                 this.program.data.remove(EntityDataKeys.range);
 
@@ -239,7 +238,7 @@ public class GamePlayState extends BaseState {
                     put(DataKeys.entity, p);
                     put("program", program);
                     put(DataKeys.in, in);
-                    put("settings", settings);
+                    put(DataKeys.settings, settings);
                 }});
                 break;
         }
