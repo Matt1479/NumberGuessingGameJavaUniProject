@@ -8,9 +8,10 @@ import states.DataKeys;
 import states.StateNames;
 import states.entity.player.Player;
 import states.entity.program.Program;
-import utility.Util;
+import utility.Settings;
 
 public class GameExitState extends BaseState {
+    private Settings settings;
     private Player p;
     private Program program;
 
@@ -21,17 +22,25 @@ public class GameExitState extends BaseState {
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
 
+        this.settings = (Settings) enterParams.get("settings");
+
         if (!this.p.data.isEmpty()) {
+            this.p.data.put("difficultyLevel", this.settings.getDifficultyLevel());
+
             this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
                 put(DataKeys.entity, p);
                 put(DataKeys.in, in);
+                put("settings", settings);
             }});
         }
 
         if (!this.program.data.isEmpty()) {
+            this.program.data.put("difficultyLevel", this.settings.getDifficultyLevel());
+
             this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
                 put(DataKeys.entity, program);
                 put(DataKeys.in, in);
+                put("settings", settings);
             }});
         }
 

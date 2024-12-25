@@ -6,6 +6,7 @@ public enum StateNames {
     // Game
     GameStart,
     GamePlay,
+    GameSettings,
     GameExit,
     // Entity
     EntityBase,

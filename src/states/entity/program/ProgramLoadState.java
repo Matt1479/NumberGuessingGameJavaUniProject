@@ -11,12 +11,17 @@ import states.entity.Entity;
 import states.entity.EntityBaseState;
 import states.entity.EntityDataKeys;
 import utility.Constants;
+import utility.Settings;
 import utility.Util;
 
 public class ProgramLoadState extends EntityBaseState {
+    private Settings settings;
+
     @Override public void enter(Hashtable<Object, Object> enterParams) {
         this.entity = (Entity) enterParams.get(DataKeys.entity);
         this.in = (Scanner) enterParams.get(DataKeys.in);
+
+        this.settings = (Settings) enterParams.get("settings");
 
         // Load program data from file, if it exists
         this.loadProgramData();
@@ -46,7 +51,7 @@ public class ProgramLoadState extends EntityBaseState {
             // Player/file does not exist
             this.entity.data.put(EntityDataKeys.name, name);
             this.entity.data.put(EntityDataKeys.newPlayer, true);
-            this.entity.data.put(EntityDataKeys.leastTries, Constants.CHANCES);
+            this.entity.data.put(EntityDataKeys.leastTries, settings.getChances());
         }
     }
 }

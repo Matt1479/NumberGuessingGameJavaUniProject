@@ -51,7 +51,7 @@ public class ProgramGuessingState extends EntityBaseState {
         this.unpack(enterParams);
 
         if (this.mixed) {
-            Util.log("+-------------------------------------------------------+");
+            Util.log("+--------------------------------------------------------+");
             Util.log("Program's turn!\n");
         } else {
             if (this.entity.data.get(EntityDataKeys.newPlayer).equals(false)) {
@@ -93,7 +93,7 @@ public class ProgramGuessingState extends EntityBaseState {
         // Change Program's state to ProgramIdle in TIME_WAIT seconds (or half of that if mixed)
         try {
             Util.log(this.mixed
-                ? "+-------------------------------------------------------+\n"
+                ? "+--------------------------------------------------------+\n"
                 : "\nReturning in " + (Constants.TIME_WAIT_TO_RETURN / 1000.00) + " seconds...\n");
             Thread.sleep(this.mixed ? Constants.TIME_WAIT_TO_RETURN / 2 : Constants.TIME_WAIT_TO_RETURN);
         } catch (InterruptedException e) {

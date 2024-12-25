@@ -14,9 +14,12 @@ import states.entity.player.PlayerStateFactory;
 import states.entity.program.Program;
 import states.entity.program.ProgramStateFactory;
 import utility.Constants;
+import utility.Settings;
 import utility.Util;
 
 public class GamePlayState extends BaseState {
+    private Settings settings;
+
     Player p;
     Program program;
 
@@ -28,11 +31,13 @@ public class GamePlayState extends BaseState {
         this.gStateMachine = (StateMachine) enterParams.get(DataKeys.gStateMachine);
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
+
+        this.settings = (Settings) enterParams.get("settings");
     }
 
     /* Suppressing the following warnings:
-        * comparing identical expressions: once you change Constants.SEED's value, they are different
-        * unused/dead code: it is used, it depends on Constants.SEED's value
+        * comparing identical expressions: once you change settings.getSeed()'s value, they are different
+        * unused/dead code: it is used, it depends on settings.getSeed()'s value
      */
     @Override @SuppressWarnings("all") public void enter(Hashtable<Object, Object> enterParams) {
         this.loadParams(enterParams);
@@ -55,7 +60,7 @@ public class GamePlayState extends BaseState {
             }
         }
 
-        this.r = Constants.SEED == -1 ? new Random() : new Random(Constants.SEED);
+        this.r = settings.getSeed() == -1 ? new Random() : new Random(settings.getSeed());
     }
 
     @Override public void exit() {}
@@ -83,11 +88,11 @@ public class GamePlayState extends BaseState {
                 this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
                     put(DataKeys.entity, p);
                     put(DataKeys.in, in);
-                    put(EntityDataKeys.start, Constants.START);
-                    put(EntityDataKeys.range, Constants.RANGE);
-                    put(EntityDataKeys.seed, Constants.SEED);
+                    put(EntityDataKeys.start, settings.getStart());
+                    put(EntityDataKeys.range, settings.getRange());
+                    put(EntityDataKeys.seed, settings.getSeed());
                     // Player data
-                    put(EntityDataKeys.chances, Constants.CHANCES);
+                    put(EntityDataKeys.chances, settings.getChances());
                 }});
                 break;
 
@@ -102,11 +107,11 @@ public class GamePlayState extends BaseState {
                 this.program.changeState(StateNames.ProgramGuessing, new Hashtable<>() {{
                     put(DataKeys.entity, program);
                     put(DataKeys.in, in);
-                    put(EntityDataKeys.start, Constants.START);
-                    put(EntityDataKeys.range, Constants.RANGE);
-                    put(EntityDataKeys.seed, Constants.SEED);
+                    put(EntityDataKeys.start, settings.getStart());
+                    put(EntityDataKeys.range, settings.getRange());
+                    put(EntityDataKeys.seed, settings.getSeed());
                     // Program data
-                    put(EntityDataKeys.chances, Constants.CHANCES);
+                    put(EntityDataKeys.chances, settings.getChances());
                 }});
                 break;
         
@@ -123,8 +128,8 @@ public class GamePlayState extends BaseState {
                 }});
                 Util.log("", true);
 
-                int playerGuessTarget = Constants.START + r.nextInt(Constants.RANGE + 1 - Constants.START);
-                int programGuessTarget = Constants.START + r.nextInt(Constants.RANGE + 1 - Constants.START);
+                int playerGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+                int programGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
                 boolean isWinner = false;
                 boolean playerTurn = r.nextInt(2) == 1;
 
@@ -138,9 +143,9 @@ public class GamePlayState extends BaseState {
                         this.p.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
                             put(DataKeys.entity, p);
                             put(DataKeys.in, in);
-                            put(EntityDataKeys.start, Constants.START);
-                            put(EntityDataKeys.range, Constants.RANGE);
-                            put(EntityDataKeys.seed, Constants.SEED);
+                            put(EntityDataKeys.start, settings.getStart());
+                            put(EntityDataKeys.range, settings.getRange());
+                            put(EntityDataKeys.seed, settings.getSeed());
                             // Player data
                             put(EntityDataKeys.chances, 1);
                             put(EntityDataKeys.tries, p.data.get(EntityDataKeys.tries));
@@ -162,12 +167,12 @@ public class GamePlayState extends BaseState {
                             put(EntityDataKeys.start,
                                 program.data.containsKey(EntityDataKeys.start)
                                 ? program.data.get(EntityDataKeys.start)
-                                : Constants.START);
+                                : settings.getStart());
                             put(EntityDataKeys.range,
                                 program.data.containsKey(EntityDataKeys.range)
                                 ? program.data.get(EntityDataKeys.range)
-                                : Constants.RANGE);
-                            put(EntityDataKeys.seed, Constants.SEED);
+                                : settings.getRange());
+                            put(EntityDataKeys.seed, settings.getSeed());
                             // Program data
                             put(EntityDataKeys.chances, 1);
                             put(EntityDataKeys.tries, program.data.get(EntityDataKeys.tries));
@@ -181,7 +186,7 @@ public class GamePlayState extends BaseState {
                                     ? (int) program.data.get(EntityDataKeys.start)
                                         + r.nextInt((int) program.data.get(EntityDataKeys.range)
                                             + 1 - (int) program.data.get(EntityDataKeys.start))
-                                    : Constants.START + r.nextInt(Constants.RANGE + 1 - Constants.START));
+                                    : settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart()));
                             }});
                         }});
 
@@ -234,6 +239,7 @@ public class GamePlayState extends BaseState {
                     put(DataKeys.entity, p);
                     put("program", program);
                     put(DataKeys.in, in);
+                    put("settings", settings);
                 }});
                 break;
         }

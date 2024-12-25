@@ -10,10 +10,12 @@ import states.StateNames;
 import states.entity.EntityBaseState;
 import states.entity.EntityDataKeys;
 import utility.Constants;
+import utility.Settings;
 import utility.Util;
 
 public class PlayerGuessingState extends EntityBaseState {
     private Scanner in;
+    private Settings settings;
 
     private int playerChances;
     private int start;
@@ -48,13 +50,15 @@ public class PlayerGuessingState extends EntityBaseState {
         this.playerTries = this.mixed
             ? Integer.parseInt(this.entity.data.get(EntityDataKeys.tries).toString())
             : 0;
+        
+        this.settings = (Settings) enterParams.get("settings");
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
         this.unpack(enterParams);
 
         if (this.mixed) {
-            Util.log("+-------------------------------------------------------+");
+            Util.log("+--------------------------------------------------------+");
             Util.log("Player's turn!\n");
         } else {
             if (this.entity.data.get(EntityDataKeys.newPlayer).equals(false) && greetPlayer) {
@@ -71,7 +75,7 @@ public class PlayerGuessingState extends EntityBaseState {
     
                 String choice = Util.getString(this.in, "Do you want to start over (y/n): ");
                 if (Util.listContains(choice, Arrays.asList("yes", "y"))) {
-                    this.playerLeastTries = Constants.CHANCES;
+                    this.playerLeastTries = settings.getChances();
                     this.entity.data.put(EntityDataKeys.leastTries, this.playerLeastTries);
                 }
             }
@@ -113,7 +117,7 @@ public class PlayerGuessingState extends EntityBaseState {
         // Change Program's state to ProgramIdle in TIME_WAIT seconds (or half of that if mixed)
         try {
             Util.log(this.mixed
-                ? "+-------------------------------------------------------+\n"
+                ? "+--------------------------------------------------------+\n"
                 : "\nReturning in " + (Constants.TIME_WAIT_TO_RETURN / 1000.00) + " seconds...\n");
             Thread.sleep(this.mixed ? Constants.TIME_WAIT_TO_RETURN / 2 : Constants.TIME_WAIT_TO_RETURN);
         } catch (InterruptedException e) {

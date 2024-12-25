@@ -6,6 +6,7 @@ import states.DataKeys;
 import states.StateFactory;
 import states.StateMachine;
 import states.StateNames;
+import utility.Settings;
 
 public class App {
     static StateMachine gStateMachine;
@@ -33,6 +34,7 @@ public class App {
         gStateMachine = new StateMachine(states);
         gStateMachine.change(StateNames.GameStart, new Hashtable<Object, Object>() {{
             put(DataKeys.in, in);
+            put("settings", new Settings());
         }});
     }
 

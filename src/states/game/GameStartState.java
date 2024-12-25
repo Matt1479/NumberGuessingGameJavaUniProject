@@ -7,8 +7,10 @@ import states.BaseState;
 import states.DataKeys;
 import states.StateMachine;
 import states.StateNames;
+import utility.Settings;
 
 public class GameStartState extends BaseState {
+    private Settings settings;
 
     // Methods
     public void loadParams(Hashtable<Object, Object> enterParams) {
@@ -16,50 +18,21 @@ public class GameStartState extends BaseState {
         this.gStateMachine = (StateMachine) enterParams.get(DataKeys.gStateMachine);
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
+
+        this.settings = (Settings) enterParams.get("settings");
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
         this.loadParams(enterParams);
 
-        // Change to PlayState, passing (Scanner) in, for now
-        this.gStateMachine.change(StateNames.GamePlay, new Hashtable<>() {{
+        // Change to SettingsState, passing (Scanner) in
+        this.gStateMachine.change(StateNames.GameSettings, new Hashtable<>() {{
             put(DataKeys.in, in);
+            put("settings", settings);
         }});
-
-        // StateNames.displayOptions(this.stateName);
     }
 
     @Override public void exit() {}
 
-    @Override public void update() {
-        // this.e.update();
-        // this.p.update();
-
-        /*
-        int choice = Util.getInt(this.in, "Your choice: ");
-
-        // Make sure the user's choice is valid (condition could be moved to Util.getInt())
-        if (choice < 0 || choice >= StateNames.values().length || choice == ((StateNames) this.stateName).ordinal()) {
-            Util.log("Invalid choice. Please try again.");
-            return;
-        }
-
-        StateNames selectedState = StateNames.values()[choice];
-
-        switch (selectedState) {
-            case Play:
-                this.gStateMachine.change(StateNames.Play, new Hashtable<>() {{
-                    put(DataKeys.in, in);
-                }});
-                break;
-            case Exit:
-                this.gStateMachine.change(StateNames.Exit, new Hashtable<>() {{
-                    put(DataKeys.in, in);
-                }});
-                break;
-            default:
-                break;
-        }
-        */
-    }
+    @Override public void update() {}
 }
