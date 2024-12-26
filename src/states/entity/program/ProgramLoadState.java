@@ -52,5 +52,6 @@ public class ProgramLoadState extends EntityBaseState {
             this.entity.data.put(EntityDataKeys.newPlayer, true);
             this.entity.data.put(EntityDataKeys.leastTries, settings.getChances());
         }
+        this.entity.data.put("difficultyLevel", settings.getDifficultyLevel());
     }
 }

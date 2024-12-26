@@ -32,6 +32,9 @@ public class PlayerGuessingState extends EntityBaseState {
     // Whether it is the mixed gameplay
     boolean mixed;
 
+    // Whether it is multiplayer
+    boolean multiPlayer;
+
     // Methods
     public void unpack(Hashtable<Object, Object> enterParams) {
         this.enterParams = enterParams;
@@ -52,6 +55,8 @@ public class PlayerGuessingState extends EntityBaseState {
             : 0;
         
         this.settings = (Settings) enterParams.get(DataKeys.settings);
+        
+        this.multiPlayer = (boolean) enterParams.getOrDefault("multiPlayer", false);
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -59,7 +64,11 @@ public class PlayerGuessingState extends EntityBaseState {
 
         if (this.mixed) {
             Util.log("+--------------------------------------------------------+");
-            Util.log("Player's turn!\n");
+            if (this.multiPlayer) {
+                Util.log("Player: " + this.entity.data.get("name") + "'s" + " turn!\n");
+            } else {
+                Util.log("Player's turn!\n");
+            }
         } else {
             if (this.entity.data.get(EntityDataKeys.newPlayer).equals(false) && greetPlayer) {
                 Util.log("\nHello, " + this.entity.data.get(EntityDataKeys.name) + "!");
@@ -105,7 +114,7 @@ public class PlayerGuessingState extends EntityBaseState {
         }
         
         // Set necessary data
-        if (mixed) {
+        if (this.mixed || this.multiPlayer) {
             // As many chances as tries
             this.entity.data.put(EntityDataKeys.chances, playerTries);
             this.entity.data.put(EntityDataKeys.tries, playerTries);
@@ -122,7 +131,6 @@ public class PlayerGuessingState extends EntityBaseState {
                     (Integer.parseInt(this.entity.data.get("numLosses").toString()) + 1));
             }
         }
-
 
         // Change Player's state to PlayerIdle in TIME_WAIT seconds (or half of that if mixed)
         try {
@@ -192,7 +200,11 @@ public class PlayerGuessingState extends EntityBaseState {
         } else if (guess > target) {
             Util.log("Too high!");
         } else {
-            Util.log("The player have guessed the target number (" + target + ")!");
+            if (this.multiPlayer) {
+                Util.log("Player: " + this.entity.data.get("name") + " have guessed the target number (" + target + ")!");
+            } else {
+                Util.log("The player have guessed the target number (" + target + ")!");
+            }
             return true;
         }
 

@@ -1,6 +1,7 @@
 package states.game;
 
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -10,6 +11,8 @@ import states.StateMachine;
 import states.StateNames;
 import states.entity.EntityDataKeys;
 import states.entity.player.Player;
+import states.entity.player.PlayerIdleState;
+import states.entity.player.PlayerLoadState;
 import states.entity.player.PlayerStateFactory;
 import states.entity.program.Program;
 import states.entity.program.ProgramStateFactory;
@@ -291,23 +294,154 @@ public class GamePlayState extends BaseState {
                 break;
 
             case 3:
-                // Load player data (if it exists)
-                this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
-                    put(DataKeys.entity, p);
-                    put(DataKeys.in, in);
-                    put(DataKeys.settings, settings);
-                }});
-                // Load program data (if it exists)
-                this.program.changeState(StateNames.ProgramLoad, new Hashtable<>() {{
-                    put(DataKeys.entity, program);
-                    put(DataKeys.in, in);
-                    put(DataKeys.settings, settings);
-                }});
-            
-                Util.log('\n' + "player's number of wins: " + this.p.data.get("numWins"));
-                Util.log("player's number of losses: " + this.p.data.get("numLosses") + '\n');
-                Util.log("program's number of wins: " + this.program.data.get("numWins"));
-                Util.log("program's number of losses: " + this.program.data.get("numLosses"));
+                // Options
+                Util.log("0. Display player data");
+                Util.log("1. Begin multiplayer");
+
+                do {
+                    // Prompt the user for choice
+                    choice = Util.getInt(this.in, '\n' + "Your choice: ");
+                } while (choice < 0 || choice > 1);
+
+                if (choice == 0) {
+                    Player currentPlayer = new Player(null);
+                    currentPlayer.addState(StateNames.PlayerIdle, new PlayerIdleState());
+                    currentPlayer.addState(StateNames.PlayerLoad, new PlayerLoadState());
+
+                    // Load player data (if it exists)
+                    currentPlayer.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
+                        put(DataKeys.entity, currentPlayer);
+                        put(DataKeys.in, in);
+                        put(DataKeys.settings, settings);
+                    }});
+
+                    Util.log('\n' + "Player "
+                        + currentPlayer.data.get(EntityDataKeys.name)
+                        + " number of wins: " + currentPlayer.data.get("numWins"));
+                        Util.log("Player "
+                        + currentPlayer.data.get(EntityDataKeys.name)
+                        + " number of losses: " + currentPlayer.data.get("numLosses"));
+                } else {
+                    // Prompt for numPlayersMult
+                    int numPlayers;
+                    do {
+                        numPlayers = Util.getInt(in, "Number of players (> 1): ");
+                    } while (numPlayers <= 1);
+                    this.settings.setNumPlayersMult(numPlayers);
+    
+                    // Hashtable of players where key = player's name, value = instance of a Player
+                    Hashtable<String, Player> players = new Hashtable<String, Player>();
+    
+                    /* Init: instantiate players, add them to hashtable */
+                    // For every Player...
+                    for (int i = 0, n = this.settings.getNumPlayersMult(); i < n; i++) {
+                        // Add a key, value pair
+                        String playerName = Util.getString(in, "Player " + i + "'s" + " name: ");
+                        players.put(playerName, new Player(null));
+    
+                        Player currentPlayer = players.get(playerName);
+    
+                        // For every state...
+                        for (StateNames stateName : StateNames.values()) {
+                            // Use StateFactory to instantiate each Player's `PlayerState`s
+                            if (stateName.toString().startsWith("Player")) {
+                                currentPlayer.addState(stateName, PlayerStateFactory.createState(stateName));
+                            }
+                        }
+    
+                        // Add currentPlayer's name to his data
+                        currentPlayer.data.put(EntityDataKeys.name, playerName);
+    
+                        // Load player data (if it exists) and set some data
+                        currentPlayer.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
+                            put(DataKeys.entity, currentPlayer);
+                            put(DataKeys.in, in);
+                            put(DataKeys.settings, settings);
+                        }});
+    
+                        // Set necessary data for this mode
+                        currentPlayer.data.put(EntityDataKeys.hasWon, false);
+                        currentPlayer.data.put(EntityDataKeys.tries, 0);
+                    }
+    
+                    // Init
+                    int guessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+                    isWinner = false;
+                    Player winner = null;
+    
+                    while (!isWinner) {
+                        // For each key, value pair in players hash table...
+                        for (Map.Entry<String, Player> entry : players.entrySet()) {
+                            Player currentPlayer = entry.getValue();
+        
+                            // Change currentPlayer's state to PlayerGuessingState
+                            currentPlayer.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                                put(DataKeys.entity, currentPlayer);
+                                put(DataKeys.in, in);
+                                put(EntityDataKeys.start, settings.getStart());
+                                put(EntityDataKeys.range, settings.getRange());
+                                put(EntityDataKeys.seed, settings.getSeed());
+                                // Player data
+                                put(EntityDataKeys.chances, 1);
+                                put(EntityDataKeys.tries, currentPlayer.data.get(EntityDataKeys.tries));
+                                // Guess params
+                                put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                    put(EntityDataKeys.playerGuessTarget, guessTarget);
+                                }});
+                                // Multiplayer params
+                                put("multiPlayer", true);
+                            }});
+        
+                            // Update the currentPlayer's stateMachine
+                            currentPlayer.update();
+    
+                            // Check if currentPlayer has won
+                            isWinner = currentPlayer.data.get(EntityDataKeys.hasWon).equals(true);
+    
+                            if (isWinner) {
+                                winner = currentPlayer;
+                                break;
+                            }
+                        }
+                    }
+    
+                    // Declare winner and set necessary data
+                    Util.log("Player " + winner.data.get("name") + " has won!");
+    
+                    // For each key, value pair in players hash table...
+                    for (Map.Entry<String, Player> entry : players.entrySet()) {
+                        Player currentPlayer = entry.getValue();
+    
+                        if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
+                            // leastTries
+                            int currentPlayerTries = Integer.parseInt(currentPlayer.data.get(EntityDataKeys.tries).toString());
+                            int currentPlayerLeastTries = Integer.parseInt(currentPlayer.data.get(EntityDataKeys.leastTries).toString());
+                            if (currentPlayerTries < currentPlayerLeastTries) {
+                                currentPlayer.data.put(EntityDataKeys.leastTries, currentPlayerTries);
+                            }
+    
+                            // Increment the winning player's number of wins
+                            currentPlayer.data.put("numWins",
+                                (Integer.parseInt(currentPlayer.data.get("numWins").toString()) + 1));
+                        } else {
+                            // Increment the losing player's number of losses
+                            currentPlayer.data.put("numLosses",
+                                (Integer.parseInt(currentPlayer.data.get("numLosses").toString()) + 1));
+                        }
+    
+                        // Save data: change currentPlayer's state to PlayerSave
+                        currentPlayer.changeState(StateNames.PlayerSave, new Hashtable<>() {{
+                            put(DataKeys.entity, currentPlayer);
+                            put(DataKeys.in, in);
+                        }});
+                        
+                        // Change currentPlayer's state to PlayerIdle
+                        currentPlayer.changeState(StateNames.PlayerIdle, new Hashtable<>() {{
+                            put(DataKeys.entity, currentPlayer);
+                            put(DataKeys.in, in);
+                        }});
+                    }
+                }
 
                 break;
 

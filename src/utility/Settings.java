@@ -7,6 +7,8 @@ public class Settings {
 
     int chances = Constants.CHANCES;
 
+    int numPlayersMult;
+
     // Getters
     public int getStart() {
         return start;
@@ -34,6 +36,9 @@ public class Settings {
             default:
                 return "Easy";
         }
+    }
+    public int getNumPlayersMult() {
+        return numPlayersMult;
     }
 
     // Setters
@@ -65,5 +70,8 @@ public class Settings {
     }
     public void setChances(int chances) {
         this.chances = chances;
+    }
+    public void setNumPlayersMult(int numPlayersMult) {
+        this.numPlayersMult = numPlayersMult;
     }
 }
