@@ -335,12 +335,9 @@ public class GamePlayState extends BaseState {
                     if (currentPlayer.data.getOrDefault(EntityDataKeys.newPlayer, true).equals(true)) {
                         Util.log("Player '" + currentPlayer.data.get(EntityDataKeys.name) + "' does not exist");
                     } else {
-                        Util.log('\n' + "Player "
-                            + currentPlayer.data.get(EntityDataKeys.name)
-                            + " number of wins: " + currentPlayer.data.get("numWins"));
-                            Util.log("Player "
-                            + currentPlayer.data.get(EntityDataKeys.name)
-                            + " number of losses: " + currentPlayer.data.get("numLosses"));
+                        for (Map.Entry<Object, Object> entry : currentPlayer.data.entrySet()) {
+                            Util.log(entry.getKey() + ":" + entry.getValue());
+                        }
                     }
 
                 } else {
