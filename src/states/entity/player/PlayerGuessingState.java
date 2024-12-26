@@ -121,12 +121,6 @@ public class PlayerGuessingState extends EntityBaseState {
                 this.entity.data.put("numLosses",
                     (Integer.parseInt(this.entity.data.get("numLosses").toString()) + 1));
             }
-    
-            // Save data: change Player's's state to PlayerSave
-            this.entity.changeState(StateNames.PlayerSave, new Hashtable<>() {{
-                put(DataKeys.entity, entity);
-                put(DataKeys.in, in);
-            }});
         }
 
 

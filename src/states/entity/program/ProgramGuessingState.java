@@ -97,12 +97,6 @@ public class ProgramGuessingState extends EntityBaseState {
                 this.entity.data.put("numLosses",
                     (Integer.parseInt(this.entity.data.get("numLosses").toString()) + 1));
             }
-
-            // Save data: change Program's state to ProgramSave
-            this.entity.changeState(StateNames.ProgramSave, new Hashtable<>() {{
-                put(DataKeys.entity, entity);
-                put(DataKeys.in, in);
-            }});
         }
 
         // Change Program's state to ProgramIdle in TIME_WAIT seconds (or half of that if mixed)

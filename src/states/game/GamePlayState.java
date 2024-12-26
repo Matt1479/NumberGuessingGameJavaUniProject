@@ -93,7 +93,19 @@ public class GamePlayState extends BaseState {
                     put(EntityDataKeys.seed, settings.getSeed());
                     // Player data
                     put(EntityDataKeys.chances, settings.getChances());
+                    // Settings
+                    put(DataKeys.settings, settings);
                 }});
+
+                // Update the Player's stateMachine
+                this.p.update();
+
+                // Save data: change Player's state to PlayerSave
+                this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
+                    put(DataKeys.entity, p);
+                    put(DataKeys.in, in);
+                }});
+
                 break;
 
             case 1:
@@ -114,6 +126,16 @@ public class GamePlayState extends BaseState {
                     // Program data
                     put(EntityDataKeys.chances, settings.getChances());
                 }});
+
+                // Update the Program's stateMachine
+                this.program.update();
+
+                // Save data: change Program's state to ProgramSave
+                this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
+                    put(DataKeys.entity, program);
+                    put(DataKeys.in, in);
+                }});
+
                 break;
         
             case 2:
@@ -131,6 +153,7 @@ public class GamePlayState extends BaseState {
                 }});
                 Util.log("", true);
 
+                // Init
                 int playerGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
                 int programGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
                 boolean isWinner = false;
@@ -161,6 +184,7 @@ public class GamePlayState extends BaseState {
                         // Update the Player's stateMachine
                         this.p.update();
 
+                        // Check if Player has won
                         isWinner = this.p.data.get(EntityDataKeys.hasWon).equals(true);
                     } else {
                         // Change to ProgramGuessingState
@@ -197,9 +221,11 @@ public class GamePlayState extends BaseState {
                         // Update the program's stateMachine
                         this.program.update();
 
+                        // Check if Program has won
                         isWinner = this.program.data.get(EntityDataKeys.hasWon).equals(true);
                     }
 
+                    // Switch turns
                     playerTurn = !playerTurn;
                 }
 
@@ -213,6 +239,7 @@ public class GamePlayState extends BaseState {
                 if (this.p.data.get(EntityDataKeys.hasWon).equals(true)) {
                     Util.log("Player wins!");
 
+                    // leastTries
                     int playerTries = Integer.parseInt(this.p.data.get(EntityDataKeys.tries).toString());
                     int playerLeastTries = Integer.parseInt(this.p.data.get(EntityDataKeys.leastTries).toString());
                     if (playerTries < playerLeastTries) {
@@ -226,6 +253,7 @@ public class GamePlayState extends BaseState {
                 } else {
                     Util.log("Program wins!");
 
+                    // leastTries
                     int programTries = Integer.parseInt(this.program.data.get(EntityDataKeys.tries).toString());
                     int programLeastTries = Integer.parseInt(this.program.data.get(EntityDataKeys.leastTries).toString());
                     if (programTries < programLeastTries) {
@@ -238,12 +266,12 @@ public class GamePlayState extends BaseState {
                     (Integer.parseInt(this.p.data.get("numLosses").toString()) + 1));
                 }
 
-                // Save data: change Player's's state to PlayerSave
+                // Save data: change Player's state to PlayerSave
                 this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
                     put(DataKeys.entity, p);
                     put(DataKeys.in, in);
                 }});
-                // Save data: change Program's's state to ProgramSave
+                // Save data: change Program's state to ProgramSave
                 this.program.changeState(StateNames.ProgramSave, new Hashtable<>() {{
                     put(DataKeys.entity, program);
                     put(DataKeys.in, in);
