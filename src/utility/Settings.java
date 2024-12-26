@@ -9,6 +9,8 @@ public class Settings {
 
     int numPlayersMult;
 
+    String difficultyLevel = null;
+
     // Getters
     public int getStart() {
         return start;
@@ -23,6 +25,10 @@ public class Settings {
         return chances;
     }
     public String getDifficultyLevel() {
+        if (this.difficultyLevel != null) {
+            return this.difficultyLevel;
+        }
+
         switch (range) {
             case Constants.RANGE_EASY:
                 return "Easy";
@@ -34,7 +40,7 @@ public class Settings {
                 return "Hard";
             
             default:
-                return "Easy";
+                return "Custom";
         }
     }
     public int getNumPlayersMult() {
@@ -45,23 +51,21 @@ public class Settings {
     public void setStart(int start) {
         this.start = start;
     }
-    public void setRange(int range) {
-        switch (range) {
-            case Constants.RANGE_EASY:
-                this.chances = Constants.CHANCES_EASY;
-                break;
+    public void setRange(int range, boolean useSwitch) {
+        if (useSwitch) {
+            switch (range) {
+                case Constants.RANGE_EASY:
+                    this.chances = Constants.CHANCES_EASY;
+                    break;
+                
+                case Constants.RANGE_NORMAL:
+                    this.chances = Constants.CHANCES_NORMAL;
+                    break;
             
-            case Constants.RANGE_NORMAL:
-                this.chances = Constants.CHANCES_NORMAL;
-                break;
-        
-            case Constants.RANGE_HARD:
-                this.chances = Constants.CHANCES_HARD;
-                break;
-            
-            default:
-                this.chances = Constants.CHANCES_EASY;
-                break;
+                case Constants.RANGE_HARD:
+                    this.chances = Constants.CHANCES_HARD;
+                    break;
+            }
         }
         this.range = range;
     }
@@ -73,5 +77,8 @@ public class Settings {
     }
     public void setNumPlayersMult(int numPlayersMult) {
         this.numPlayersMult = numPlayersMult;
+    }
+    public void setDifficultyLevel(String difficultyLevel) {
+        this.difficultyLevel = difficultyLevel;
     }
 }

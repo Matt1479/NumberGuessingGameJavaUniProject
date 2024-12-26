@@ -89,7 +89,8 @@ public class PlayerGuessingState extends EntityBaseState {
                 }
             }
 
-            Util.log("\nWelcome to the guessing game! You have " + playerChances + " chances.\n");
+            Util.log("\nWelcome to the guessing game! You have " + playerChances + " chances.");
+            Util.log("The guessing range is [" + this.start + ", " + this.range + "]");
         }
     }
 

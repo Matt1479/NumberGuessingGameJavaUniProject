@@ -58,6 +58,8 @@ public class ProgramGuessingState extends EntityBaseState {
                 Util.log("The program's least amount of tries to win: " + this.programLeastTries);
             }
         }
+
+        Util.log("The guessing range is [" + this.start + ", " + this.range + "]");
     }
 
     @Override @SuppressWarnings("unchecked") public void update() {
