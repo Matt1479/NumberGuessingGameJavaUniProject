@@ -1,5 +1,6 @@
 package states.game;
 
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
@@ -26,6 +27,8 @@ public class GamePlayState extends BaseState {
     Program program;
 
     Random r;
+
+    boolean changeDifficulty = false;
 
     // Methods
     public void loadParams(Hashtable<Object, Object> enterParams) {
@@ -108,6 +111,13 @@ public class GamePlayState extends BaseState {
                     put(DataKeys.entity, p);
                     put(DataKeys.in, in);
                 }});
+
+                if (this.p.data.get(EntityDataKeys.hasWon).equals(true)) {
+                    String input = Util.getString(this.in, "Do you want to change difficulty level (y/n): ");
+                    if (Util.listContains(input, Arrays.asList("yes", "y"))) {
+                        this.changeDifficulty = true;
+                    }
+                }
 
                 break;
 
@@ -253,6 +263,13 @@ public class GamePlayState extends BaseState {
                         (Integer.parseInt(this.p.data.get("numWins").toString()) + 1));
                     this.program.data.put("numLosses",
                     (Integer.parseInt(this.program.data.get("numLosses").toString()) + 1));
+
+                    if (this.p.data.get(EntityDataKeys.hasWon).equals(true)) {
+                        String input = Util.getString(this.in, "Do you want to change difficulty level (y/n): ");
+                        if (Util.listContains(input, Arrays.asList("yes", "y"))) {
+                            this.changeDifficulty = true;
+                        }
+                    }
                 } else {
                     Util.log("Program wins!");
 
@@ -446,6 +463,12 @@ public class GamePlayState extends BaseState {
                             put(DataKeys.in, in);
                         }});
                     }
+
+                    // No need for an if-check here, there is always a winner
+                    String input = Util.getString(this.in, "Do you want to change difficulty level (y/n): ");
+                    if (Util.listContains(input, Arrays.asList("yes", "y"))) {
+                        this.changeDifficulty = true;
+                    }
                 }
 
                 break;
@@ -462,6 +485,17 @@ public class GamePlayState extends BaseState {
                     put(DataKeys.settings, settings);
                 }});
                 break;
+        }
+
+        if (this.changeDifficulty) {
+            // Change to SettingsState
+            this.gStateMachine.change(StateNames.GameSettings, new Hashtable<>() {{
+                put(DataKeys.in, in);
+                put(DataKeys.settings, settings);
+            }});
+
+            // Reset to default value
+            this.changeDifficulty = false;
         }
 
         // Update all of the entities (when Idle, it does nothing)
