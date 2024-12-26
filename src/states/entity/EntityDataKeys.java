@@ -22,4 +22,8 @@ public interface EntityDataKeys {
     String playerGuessTarget = "playerGuessTarget";
     String programGuessTarget = "programGuessTarget";
     String programGuess = "programGuess";
+
+    String numWins = "numWins";
+    String numLosses = "numLosses";
+    String difficultyLevel = "difficultyLevel";
 }

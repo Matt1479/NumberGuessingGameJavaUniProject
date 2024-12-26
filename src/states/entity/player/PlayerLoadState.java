@@ -61,6 +61,6 @@ public class PlayerLoadState extends EntityBaseState {
             this.entity.data.put("numWins", 0);
             this.entity.data.put("numLosses", 0);
         }
-        this.entity.data.put("difficultyLevel", settings.getDifficultyLevel());
+        this.entity.data.put(EntityDataKeys.difficultyLevel, settings.getDifficultyLevel());
     }
 }

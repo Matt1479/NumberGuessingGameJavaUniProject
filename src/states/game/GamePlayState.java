@@ -406,7 +406,7 @@ public class GamePlayState extends BaseState {
                     }
     
                     // Declare winner and set necessary data
-                    Util.log("Player " + winner.data.get("name") + " has won!");
+                    Util.log("Player " + winner.data.get(EntityDataKeys.name) + " has won!");
     
                     // For each key, value pair in players hash table...
                     for (Map.Entry<String, Player> entry : players.entrySet()) {

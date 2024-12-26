@@ -65,7 +65,7 @@ public class PlayerGuessingState extends EntityBaseState {
         if (this.mixed) {
             Util.log("+--------------------------------------------------------+");
             if (this.multiPlayer) {
-                Util.log("Player: " + this.entity.data.get("name") + "'s" + " turn!\n");
+                Util.log("Player: " + this.entity.data.get(EntityDataKeys.name) + "'s" + " turn!\n");
             } else {
                 Util.log("Player's turn!\n");
             }
@@ -201,7 +201,7 @@ public class PlayerGuessingState extends EntityBaseState {
             Util.log("Too high!");
         } else {
             if (this.multiPlayer) {
-                Util.log("Player: " + this.entity.data.get("name") + " have guessed the target number (" + target + ")!");
+                Util.log("Player: " + this.entity.data.get(EntityDataKeys.name) + " have guessed the target number (" + target + ")!");
             } else {
                 Util.log("The player have guessed the target number (" + target + ")!");
             }
