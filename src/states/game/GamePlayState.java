@@ -315,12 +315,17 @@ public class GamePlayState extends BaseState {
                         put(DataKeys.settings, settings);
                     }});
 
-                    Util.log('\n' + "Player "
-                        + currentPlayer.data.get(EntityDataKeys.name)
-                        + " number of wins: " + currentPlayer.data.get("numWins"));
-                        Util.log("Player "
-                        + currentPlayer.data.get(EntityDataKeys.name)
-                        + " number of losses: " + currentPlayer.data.get("numLosses"));
+                    if (currentPlayer.data.getOrDefault(EntityDataKeys.newPlayer, true).equals(true)) {
+                        Util.log("Player '" + currentPlayer.data.get(EntityDataKeys.name) + "' does not exist");
+                    } else {
+                        Util.log('\n' + "Player "
+                            + currentPlayer.data.get(EntityDataKeys.name)
+                            + " number of wins: " + currentPlayer.data.get("numWins"));
+                            Util.log("Player "
+                            + currentPlayer.data.get(EntityDataKeys.name)
+                            + " number of losses: " + currentPlayer.data.get("numLosses"));
+                    }
+
                 } else {
                     // Prompt for numPlayersMult
                     int numPlayers;
