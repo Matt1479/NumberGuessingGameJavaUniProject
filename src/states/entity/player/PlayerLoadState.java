@@ -10,7 +10,6 @@ import states.DataKeys;
 import states.entity.Entity;
 import states.entity.EntityBaseState;
 import states.entity.EntityDataKeys;
-import utility.Constants;
 import utility.Settings;
 import utility.Util;
 
