@@ -2,9 +2,12 @@ package states.game;
 
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeMap;
 
 import states.BaseState;
 import states.DataKeys;
@@ -103,6 +106,9 @@ public class GamePlayState extends BaseState {
                     put(DataKeys.settings, settings);
                 }});
 
+                this.p.data.put("tournament", false);
+                this.p.data.put("multiPlayer", false);
+
                 // Update the Player's stateMachine
                 this.p.update();
 
@@ -140,6 +146,9 @@ public class GamePlayState extends BaseState {
                     put(EntityDataKeys.chances, settings.getChances());
                 }});
 
+                this.p.data.put("tournament", false);
+                this.p.data.put("multiPlayer", false);
+
                 // Update the Program's stateMachine
                 this.program.update();
 
@@ -175,6 +184,12 @@ public class GamePlayState extends BaseState {
                 // Reset tries to 0
                 this.p.data.put(EntityDataKeys.tries, 0);
                 this.program.data.put(EntityDataKeys.tries, 0);
+
+                this.p.data.put("tournament", false);
+                this.p.data.put("multiPlayer", false);
+
+                this.program.data.put("tournament", false);
+                this.program.data.put("multiPlayer", false);
                 
                 while (!isWinner) {
                     if (playerTurn) {
@@ -313,12 +328,13 @@ public class GamePlayState extends BaseState {
             case 3:
                 // Options
                 Util.log("0. Display player data");
-                Util.log("1. Begin multiplayer");
+                Util.log("1. Begin multiplayer - normal mode");
+                Util.log("2. Begin multiplayer - tournament mode");
 
                 do {
                     // Prompt the user for choice
                     choice = Util.getInt(this.in, '\n' + "Your choice: ");
-                } while (choice < 0 || choice > 1);
+                } while (choice < 0 || choice > 2);
 
                 if (choice == 0) {
                     Player currentPlayer = new Player(null);
@@ -340,12 +356,21 @@ public class GamePlayState extends BaseState {
                         }
                     }
 
-                } else {
-                    // Prompt for numPlayersMult
-                    int numPlayers;
-                    do {
-                        numPlayers = Util.getInt(in, "Number of players (> 1): ");
-                    } while (numPlayers <= 1);
+                } else if (choice == 1 || choice == 2) {
+                    int numPlayers = 0;
+
+                    // Normal mode
+                    if (choice == 1) {
+                        do {
+                            // Prompt for numPlayersMult
+                            numPlayers = Util.getInt(in, "Number of players (> 1): ");
+                        } while (numPlayers <= 1);
+                    } else if (choice == 2) {
+                        do {
+                            // Prompt for numPlayersMult
+                            numPlayers = Util.getInt(in, "Number of players (> 1, even): ");
+                        } while (numPlayers <= 1 || numPlayers % 2 == 1);
+                    }
                     this.settings.setNumPlayersMult(numPlayers);
     
                     // Hashtable of players where key = player's name, value = instance of a Player
@@ -381,56 +406,316 @@ public class GamePlayState extends BaseState {
                         // Set necessary data for this mode
                         currentPlayer.data.put(EntityDataKeys.hasWon, false);
                         currentPlayer.data.put(EntityDataKeys.tries, 0);
+                        // Multiplayer params
+                        currentPlayer.data.put("multiPlayer", true);
+
+                        // If normal mode
+                        if (choice == 1) {
+                            currentPlayer.data.put("tournament", false);
+                        }
+
+                        // If tournament
+                        if (choice == 2) {
+                            // n-th player
+                            currentPlayer.data.put("n", i);
+                            currentPlayer.data.put("tournament", true);
+                            currentPlayer.data.put("wins", 0);
+                        }
                     }
     
-                    // Init
-                    int guessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
-                    isWinner = false;
-                    Player winner = null;
+                    // If multiplayer normal mode
+                    if (choice == 1) {
+                        // Init
+                        int guessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+                        isWinner = false;
+                        Player winner = null;
+        
+                        while (!isWinner) {
+                            // For each key, value pair in players hash table...
+                            for (Map.Entry<String, Player> entry : players.entrySet()) {
+                                Player currentPlayer = entry.getValue();
+            
+                                // Change currentPlayer's state to PlayerGuessingState
+                                currentPlayer.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                                    put(DataKeys.entity, currentPlayer);
+                                    put(DataKeys.in, in);
+                                    put(EntityDataKeys.start, settings.getStart());
+                                    put(EntityDataKeys.range, settings.getRange());
+                                    put(EntityDataKeys.seed, settings.getSeed());
+                                    // Player data
+                                    put(EntityDataKeys.chances, 1);
+                                    put(EntityDataKeys.tries, currentPlayer.data.get(EntityDataKeys.tries));
+                                    // Guess params
+                                    put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                        put(EntityDataKeys.playerGuessTarget, guessTarget);
+                                    }});
+                                    // Multiplayer params
+                                    put("multiPlayer", true);
+                                }});
     
-                    while (!isWinner) {
+                                // If leader - has 2 moves
+                                if (currentPlayer.data.getOrDefault("leader", false).equals("true")) {
+                                    // Update the currentPlayer's stateMachine - update the previous state change
+                                    currentPlayer.update();
+    
+                                    // If leader didn't win yet, he can do another move
+                                    if (!currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
+                                        // Change currentPlayer's state to PlayerGuessingState
+                                        currentPlayer.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                                            put(DataKeys.entity, currentPlayer);
+                                            put(DataKeys.in, in);
+                                            put(EntityDataKeys.start, settings.getStart());
+                                            put(EntityDataKeys.range, settings.getRange());
+                                            put(EntityDataKeys.seed, settings.getSeed());
+                                            // Player data
+                                            put(EntityDataKeys.chances, 1);
+                                            put(EntityDataKeys.tries, currentPlayer.data.get(EntityDataKeys.tries));
+                                            // Guess params
+                                            put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                                put(EntityDataKeys.playerGuessTarget, guessTarget);
+                                            }});
+                                            // Multiplayer params
+                                            put("multiPlayer", true);
+                                        }});
+                                    }
+                                }
+
+                                // Update the currentPlayer's stateMachine
+                                currentPlayer.update();
+        
+                                // Check if currentPlayer has won
+                                isWinner = currentPlayer.data.get(EntityDataKeys.hasWon).equals(true);
+        
+                                if (isWinner) {
+                                    winner = currentPlayer;
+                                    break;
+                                }
+                            }
+                        }
+        
+                        // Declare winner and set necessary data
+                        Util.log("Player " + winner.data.get(EntityDataKeys.name) + " has won!");
+        
                         // For each key, value pair in players hash table...
                         for (Map.Entry<String, Player> entry : players.entrySet()) {
                             Player currentPlayer = entry.getValue();
         
-                            // Change currentPlayer's state to PlayerGuessingState
-                            currentPlayer.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
-                                put(DataKeys.entity, currentPlayer);
-                                put(DataKeys.in, in);
-                                put(EntityDataKeys.start, settings.getStart());
-                                put(EntityDataKeys.range, settings.getRange());
-                                put(EntityDataKeys.seed, settings.getSeed());
-                                // Player data
-                                put(EntityDataKeys.chances, 1);
-                                put(EntityDataKeys.tries, currentPlayer.data.get(EntityDataKeys.tries));
-                                // Guess params
-                                put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
-                                    put(EntityDataKeys.playerGuessTarget, guessTarget);
-                                }});
-                                // Multiplayer params
-                                put("multiPlayer", true);
-                            }});
-        
-                            // Update the currentPlayer's stateMachine
-                            currentPlayer.update();
-    
-                            // Check if currentPlayer has won
-                            isWinner = currentPlayer.data.get(EntityDataKeys.hasWon).equals(true);
-    
-                            if (isWinner) {
-                                winner = currentPlayer;
-                                break;
+                            if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
+                                // Increment the winning player's number of wins
+                                currentPlayer.data.put("numWins",
+                                    (Integer.parseInt(currentPlayer.data.get("numWins").toString()) + 1));
+                                
+                                // Give the winning player a new key:value pair: {"leader":true}
+                                currentPlayer.data.put("leader", true);
+                            } else {
+                                // Increment the losing player's number of losses
+                                currentPlayer.data.put("numLosses",
+                                    (Integer.parseInt(currentPlayer.data.get("numLosses").toString()) + 1));
+                                
+                                // Give the losing player a new key:value pair: {"leader":false}
+                                currentPlayer.data.put("leader", false);
                             }
                         }
+                    } else {
+                        Util.log("\n+=======================Tournament=======================+\n");
+                        Util.log("Tournament types, for example:");
+                        // best of 1 (1 game per round, needs 1 win to win)
+                        Util.log("  Best of 1 (1 game  per round);");
+                        // best of 3 (3 games per round, needs 2/3 wins to win)
+                        Util.log("  Best of 3 (3 games per round);");
+                        // best of 5 (5 games per round, needs 3/5 wins to win)
+                        Util.log("  Best of 5 (5 games per round);");
+                        // best of n (n games per round, needs >50% wins to win)
+                        Util.log("  Best of n (n games per round);");
+                        Util.log("You will need to get the majority of wins to win a tournament bracket.");
+
+                        int bestOf;
+                        do {
+                            // Prompt the user for bestOf
+                            bestOf = Util.getInt(this.in, '\n' + "Input n (games per round, > 0): ");
+                        } while (bestOf < 0);
+
+                        boolean shufflePlayers = false;
+                        String answer = Util.getString(this.in, "Do you want to shuffle players after each round (y/n): ");
+                        if (Util.listContains(answer, Arrays.asList("yes", "y"))) {
+                            shufflePlayers = true;
+                        }
+
+                        boolean hasChampion = false;
+                        Player champion = null;
+
+                        while (!hasChampion) {
+                            // Tournament bracket
+                            // n: n-th player
+                            for (int n = 0, size = players.size(); n < size; n = n + 2) {
+                                // Init
+                                isWinner = false;
+                                Player winner = null;
+
+                                Player[] pair = {null, null};
+
+                                // Get (n)-th and (n + 1)-th player
+                                for (Map.Entry<String, Player> entry : players.entrySet()) {
+                                    if (entry.getValue().data.get("n").equals(n)) {
+                                        pair[0] = entry.getValue();
+                                    }
+                                    if (entry.getValue().data.get("n").equals(n + 1)) {
+                                        pair[1] = entry.getValue();
+                                    }
+                                }
+
+                                // bestOf n (n games per round, needs majority of wins to win)
+                                for (int numGames = 0; numGames < bestOf; numGames++)
+                                {
+                                    int guessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+
+                                    // Competition between a pair of players
+                                    while (!isWinner) {
+                                        if (pair[0] == null || pair[1] == null) {
+                                            break;
+                                        }
+
+                                        // Util.log(pair[0].data.get("name") + " and " + pair[1].data.get("name") + " are competing!");
+    
+                                        for (int j = 0; j < 2; j++) {
+                                            // Weird Java stuff
+                                            final int index = j;
+    
+                                            // Change pair[index]'s state to PlayerGuessingState
+                                            pair[index].changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                                                put(DataKeys.entity, pair[index]);
+                                                put(DataKeys.in, in);
+                                                put(EntityDataKeys.start, settings.getStart());
+                                                put(EntityDataKeys.range, settings.getRange());
+                                                put(EntityDataKeys.seed, settings.getSeed());
+                                                // Player data
+                                                put(EntityDataKeys.chances, 1);
+                                                put(EntityDataKeys.tries, pair[index].data.get(EntityDataKeys.tries));
+                                                // Guess params
+                                                put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                                    put(EntityDataKeys.playerGuessTarget, guessTarget);
+                                                }});
+                                            }});
+                                            
+                                            // Update the pair[index]'s stateMachine
+                                            pair[index].update();
+                    
+                                            // Check if pair[index] has won
+                                            isWinner = pair[index].data.get(EntityDataKeys.hasWon).equals(true);
+                    
+                                            if (isWinner) {
+                                                winner = pair[index];
+                                                int wins = Integer.parseInt(winner.data.get("wins").toString());
+                                                // Increment the number of wins in this tournament
+                                                winner.data.put("wins", ++wins);
+
+                                                // Winner has the majority of wins, he is the winner of this bracket
+                                                // Only remove the other player if this condition is true
+                                                if (((float) wins / (float) bestOf) > 0.5) {
+                                                    // Get losingPlayer
+                                                    Player losingPlayer = pair[index == 0 ? 1 : 0];
+
+                                                    // Util.log(losingPlayer.data.get("name") + " is out!");
+
+                                                    /* Save losing player's data */
+                                                    // Increment the losing player's number of losses
+                                                    losingPlayer.data.put("numLosses",
+                                                        (Integer.parseInt(losingPlayer.data.get("numLosses").toString()) + 1));
+                                                    // This player is not the champion
+                                                    losingPlayer.data.put("champion", false);
+                                                    // Remove n
+                                                    losingPlayer.data.remove("n");
+                                                    // Remove wins since it is not relevant
+                                                    losingPlayer.data.remove("wins");
+                                                    // Save data: change losingPlayer's state to PlayerSave
+                                                    losingPlayer.changeState(StateNames.PlayerSave, new Hashtable<>() {{
+                                                        put(DataKeys.entity, losingPlayer);
+                                                        put(DataKeys.in, in);
+                                                    }});
+                                                    // Remove the Player from the hash table of `Player`s
+                                                    players.remove(losingPlayer.data.get(EntityDataKeys.name));
+                                                }
+    
+                                                // If only 1 player left, he is the champion
+                                                if (players.size() == 1) {
+                                                    hasChampion = true;
+                                                    champion = winner;
+                                                    champion.data.put("champion", true);
+                                                }
+
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // If winner has the majority of wins, skip the remaining rounds
+                                    int wins = winner != null ? Integer.parseInt(winner.data.get("wins").toString()) : 0;
+                                    if (((float) wins / (float) bestOf) > 0.5) {
+                                        break;
+                                    }
+
+                                    // Reset
+                                    isWinner = false;
+                                }
+                            }
+
+                            /* Used for sorted or random position assignment */
+                            // create a TreeMap
+                            TreeMap<String, Player> treeMap = new TreeMap<>(players); 
+                            // create a keyset
+                            Set<String> keys = treeMap.keySet(); 
+                            Iterator<String> itr = keys.iterator();
+
+                            int counter = 0;
+
+                            int htSize = players.size();
+                            Integer[] spots = new Integer[htSize];
+                            for (int i = 0; i < htSize; i++) {
+                                spots[i] = 0;
+                            }
+
+                            // Iterate over remaining players and re-assign their positions
+                            // traverse the TreeMap using iterator
+                            while (itr.hasNext()) {
+                                String name = itr.next();
+
+                                // Reset wins to 0
+                                treeMap.get(name).data.put("wins", 0);
+
+                                if (shufflePlayers) {
+                                    int randIndex = r.nextInt(htSize);
+                                    while (spots[randIndex] == 1) {
+                                        randIndex = r.nextInt(htSize);
+                                    }
+
+                                    // Mark spots[randIndex] as taken
+                                    spots[randIndex] = 1;
+
+                                    // Assign n (in random order)
+                                    treeMap.get(name).data.put("n", randIndex);
+                                } else {
+                                    // Assign n (in sorted order)
+                                    treeMap.get(name).data.put("n", counter);
+                                }
+
+                                counter++;
+                            }
+
+                            // for (Map.Entry<String, Player> entry : players.entrySet()) {
+                            //     Util.log(entry.getValue().data.get("name") + "'s n: " + entry.getValue().data.get("n"));
+                            // }
+                        }
+
+                        Util.log("The champion of the tournament: " + champion.data.get(EntityDataKeys.name));
+
+                        Util.log("\n+========================================================+\n");
                     }
-    
-                    // Declare winner and set necessary data
-                    Util.log("Player " + winner.data.get(EntityDataKeys.name) + " has won!");
-    
+
+                    // Set some data and save it
                     // For each key, value pair in players hash table...
                     for (Map.Entry<String, Player> entry : players.entrySet()) {
                         Player currentPlayer = entry.getValue();
-    
+
                         if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
                             // leastTries
                             int currentPlayerTries = Integer.parseInt(currentPlayer.data.get(EntityDataKeys.tries).toString());
@@ -438,16 +723,7 @@ public class GamePlayState extends BaseState {
                             if (currentPlayerTries < currentPlayerLeastTries) {
                                 currentPlayer.data.put(EntityDataKeys.leastTries, currentPlayerTries);
                             }
-    
-                            // Increment the winning player's number of wins
-                            currentPlayer.data.put("numWins",
-                                (Integer.parseInt(currentPlayer.data.get("numWins").toString()) + 1));
-                        } else {
-                            // Increment the losing player's number of losses
-                            currentPlayer.data.put("numLosses",
-                                (Integer.parseInt(currentPlayer.data.get("numLosses").toString()) + 1));
                         }
-    
                         // Save data: change currentPlayer's state to PlayerSave
                         currentPlayer.changeState(StateNames.PlayerSave, new Hashtable<>() {{
                             put(DataKeys.entity, currentPlayer);
@@ -471,10 +747,6 @@ public class GamePlayState extends BaseState {
                 break;
 
             case 4:
-                Util.log("Not yet implemented.");
-                break;
-
-            case 5:
                 this.gStateMachine.change(StateNames.GameExit, new Hashtable<>() {{
                     put(DataKeys.entity, p);
                     put("program", program);
@@ -507,7 +779,6 @@ public class GamePlayState extends BaseState {
         Util.log(i + ". " + "Reverse (Program is guessing)");   i++;
         Util.log(i + ". " + "Mixed");                           i++;
         Util.log(i + ". " + "Multi-Player");                    i++;
-        Util.log(i + ". " + "Tournament");                      i++;
         Util.log(i + ". " + "Exit");                            i++;
     }
 }
