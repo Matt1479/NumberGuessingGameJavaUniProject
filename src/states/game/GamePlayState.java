@@ -427,6 +427,12 @@ public class GamePlayState extends BaseState {
                     if (choice == 1) {
                         // Init
                         int rand = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+                        int swap;
+                        // Make sure swap is different from rand
+                        do {
+                            swap = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+                        } while (swap == rand);
+                        boolean swapped = false;
                         isWinner = false;
                         Player winner = null;
         
@@ -439,24 +445,27 @@ public class GamePlayState extends BaseState {
 
                                 // If champion (can swap guessTarget number once), and not swapped yet
                                 if (currentPlayer.data.getOrDefault("champion", false).equals("true")
-                                    &&
-                                    currentPlayer.data.getOrDefault("swapped", "false").equals("false")
+                                    && !swapped
                                     // 1 in 2 chance to occur
-                                    && r.nextInt(2) == 1) {
+                                    && r.nextInt(2) == 0) {
 
                                     Util.log("You are the champion! You have the right to swap the guess target once.");
                                     String answer = Util.getString(this.in, "Do you want to swap the guess target (y/n): ");
 
                                     if (Util.listContains(answer, Arrays.asList("yes", "y"))) {
-                                        guessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
-                                        currentPlayer.data.put("swapped", true);
+                                        guessTarget = swap;
+                                        swapped = true;
                                     } else {
                                         guessTarget = rand;
                                     }
                                 } else {
-                                    guessTarget = rand;
+                                    if (swapped) {
+                                        guessTarget = swap;
+                                    } else {
+                                        guessTarget = rand;
+                                    }
                                 }
-            
+
                                 // Change currentPlayer's state to PlayerGuessingState
                                 currentPlayer.changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
                                     put(DataKeys.entity, currentPlayer);
@@ -737,12 +746,6 @@ public class GamePlayState extends BaseState {
                     // For each key, value pair in players hash table...
                     for (Map.Entry<String, Player> entry : players.entrySet()) {
                         Player currentPlayer = entry.getValue();
-
-                        if (currentPlayer.data.containsKey("swapped")) {
-                            // Remove this key so champion can swap the number again
-                            // in another (normal mode) game
-                            currentPlayer.data.remove("swapped");
-                        }
 
                         if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
                             // leastTries
