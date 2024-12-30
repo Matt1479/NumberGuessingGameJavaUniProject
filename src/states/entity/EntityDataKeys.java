@@ -26,4 +26,13 @@ public interface EntityDataKeys {
     String numWins = "numWins";
     String numLosses = "numLosses";
     String difficultyLevel = "difficultyLevel";
+
+    // Multi-player keys
+    String multiPlayer = "multiPlayer";
+    String tournament = "tournament";
+
+    String leader = "leader";
+    String champion = "champion";
+    String n = "n";
+    String wins = "wins";
 }

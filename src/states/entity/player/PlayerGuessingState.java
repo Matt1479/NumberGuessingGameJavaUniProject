@@ -59,8 +59,8 @@ public class PlayerGuessingState extends EntityBaseState {
         
         this.settings = (Settings) enterParams.get(DataKeys.settings);
         
-        this.multiPlayer = (boolean) this.entity.data.getOrDefault("multiPlayer", false);
-        this.tournament = (boolean) this.entity.data.getOrDefault("tournament", false);
+        this.multiPlayer = (boolean) this.entity.data.getOrDefault(EntityDataKeys.multiPlayer, false);
+        this.tournament = (boolean) this.entity.data.getOrDefault(EntityDataKeys.tournament, false);
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -70,11 +70,11 @@ public class PlayerGuessingState extends EntityBaseState {
             Util.log("+--------------------------------------------------------+");
             if (this.multiPlayer) {
                 if (tournament) {
-                    if (this.entity.data.getOrDefault("champion", false).equals(true)) {
+                    if (this.entity.data.getOrDefault(EntityDataKeys.champion, false).equals(true)) {
                         Util.log("[Champion] ", false);
                     }
                 } else {
-                    if (this.entity.data.getOrDefault("leader", false).equals("true")) {
+                    if (this.entity.data.getOrDefault(EntityDataKeys.leader, false).equals("true")) {
                         Util.log("[Leader] ", false);
                     }
                 }

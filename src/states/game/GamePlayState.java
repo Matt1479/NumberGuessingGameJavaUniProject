@@ -106,8 +106,8 @@ public class GamePlayState extends BaseState {
                     put(DataKeys.settings, settings);
                 }});
 
-                this.p.data.put("tournament", false);
-                this.p.data.put("multiPlayer", false);
+                this.p.data.put(EntityDataKeys.tournament, false);
+                this.p.data.put(EntityDataKeys.multiPlayer, false);
 
                 // Update the Player's stateMachine
                 this.p.update();
@@ -146,8 +146,8 @@ public class GamePlayState extends BaseState {
                     put(EntityDataKeys.chances, settings.getChances());
                 }});
 
-                this.p.data.put("tournament", false);
-                this.p.data.put("multiPlayer", false);
+                this.p.data.put(EntityDataKeys.tournament, false);
+                this.p.data.put(EntityDataKeys.multiPlayer, false);
 
                 // Update the Program's stateMachine
                 this.program.update();
@@ -185,11 +185,11 @@ public class GamePlayState extends BaseState {
                 this.p.data.put(EntityDataKeys.tries, 0);
                 this.program.data.put(EntityDataKeys.tries, 0);
 
-                this.p.data.put("tournament", false);
-                this.p.data.put("multiPlayer", false);
+                this.p.data.put(EntityDataKeys.tournament, false);
+                this.p.data.put(EntityDataKeys.multiPlayer, false);
 
-                this.program.data.put("tournament", false);
-                this.program.data.put("multiPlayer", false);
+                this.program.data.put(EntityDataKeys.tournament, false);
+                this.program.data.put(EntityDataKeys.multiPlayer, false);
                 
                 while (!isWinner) {
                     if (playerTurn) {
@@ -405,19 +405,19 @@ public class GamePlayState extends BaseState {
                         currentPlayer.data.put(EntityDataKeys.hasWon, false);
                         currentPlayer.data.put(EntityDataKeys.tries, 0);
                         // Multiplayer params
-                        currentPlayer.data.put("multiPlayer", true);
+                        currentPlayer.data.put(EntityDataKeys.multiPlayer, true);
 
                         // If normal mode
                         if (choice == 1) {
-                            currentPlayer.data.put("tournament", false);
+                            currentPlayer.data.put(EntityDataKeys.tournament, false);
                         }
 
                         // If tournament
                         if (choice == 2) {
                             // n-th player
-                            currentPlayer.data.put("n", i);
-                            currentPlayer.data.put("tournament", true);
-                            currentPlayer.data.put("wins", 0);
+                            currentPlayer.data.put(EntityDataKeys.n, i);
+                            currentPlayer.data.put(EntityDataKeys.tournament, true);
+                            currentPlayer.data.put(EntityDataKeys.wins, 0);
                         }
                     }
     
@@ -442,7 +442,7 @@ public class GamePlayState extends BaseState {
                                 Player currentPlayer = entry.getValue();
 
                                 // If champion (can swap guessTarget number once), and not swapped yet
-                                if (currentPlayer.data.getOrDefault("champion", false).equals("true")
+                                if (currentPlayer.data.getOrDefault(EntityDataKeys.champion, false).equals("true")
                                     && !swapped
                                     // 1 in 2 chance to occur
                                     && r.nextInt(2) == 0) {
@@ -478,11 +478,11 @@ public class GamePlayState extends BaseState {
                                         put(EntityDataKeys.playerGuessTarget, guessTarget);
                                     }});
                                     // Multiplayer params
-                                    put("multiPlayer", true);
+                                    put(EntityDataKeys.multiPlayer, true);
                                 }});
     
                                 // If leader - has 2 moves
-                                if (currentPlayer.data.getOrDefault("leader", false).equals("true")) {
+                                if (currentPlayer.data.getOrDefault(EntityDataKeys.leader, false).equals("true")) {
                                     // Update the currentPlayer's stateMachine - update the previous state change
                                     currentPlayer.update();
     
@@ -502,7 +502,7 @@ public class GamePlayState extends BaseState {
                                                 put(EntityDataKeys.playerGuessTarget, guessTarget);
                                             }});
                                             // Multiplayer params
-                                            put("multiPlayer", true);
+                                            put(EntityDataKeys.multiPlayer, true);
                                         }});
                                     }
                                 }
@@ -532,15 +532,15 @@ public class GamePlayState extends BaseState {
                                 currentPlayer.data.put("numWins",
                                     (Integer.parseInt(currentPlayer.data.get("numWins").toString()) + 1));
                                 
-                                // Give the winning player a new key:value pair: {"leader":true}
-                                currentPlayer.data.put("leader", true);
+                                // Give the winning player a new key:value pair: {leader:true}
+                                currentPlayer.data.put(EntityDataKeys.leader, true);
                             } else {
                                 // Increment the losing player's number of losses
                                 currentPlayer.data.put("numLosses",
                                     (Integer.parseInt(currentPlayer.data.get("numLosses").toString()) + 1));
                                 
-                                // Give the losing player a new key:value pair: {"leader":false}
-                                currentPlayer.data.put("leader", false);
+                                // Give the losing player a new key:value pair: {leader:false}
+                                currentPlayer.data.put(EntityDataKeys.leader, false);
                             }
                         }
                     } else {
@@ -583,10 +583,10 @@ public class GamePlayState extends BaseState {
 
                                 // Get (n)-th and (n + 1)-th player
                                 for (Map.Entry<String, Player> entry : players.entrySet()) {
-                                    if (entry.getValue().data.get("n").equals(n)) {
+                                    if (entry.getValue().data.get(EntityDataKeys.n).equals(n)) {
                                         pair[0] = entry.getValue();
                                     }
-                                    if (entry.getValue().data.get("n").equals(n + 1)) {
+                                    if (entry.getValue().data.get(EntityDataKeys.n).equals(n + 1)) {
                                         pair[1] = entry.getValue();
                                     }
                                 }
@@ -609,7 +609,7 @@ public class GamePlayState extends BaseState {
                                             final int index = j;
 
                                             // Champion perk: can do 1-3 moves (random)
-                                            if (pair[index].data.getOrDefault("champion", "false").equals("true")) {
+                                            if (pair[index].data.getOrDefault(EntityDataKeys.champion, "false").equals("true")) {
                                                 for (int k = 0, tries = 1 + r.nextInt(3); k < tries; k++) {
                                                     // If champion did not win yet, he can do a move
                                                     if (!pair[index].data.get(EntityDataKeys.hasWon).equals(true)) {
@@ -627,7 +627,7 @@ public class GamePlayState extends BaseState {
                                                                 put(EntityDataKeys.playerGuessTarget, guessTarget);
                                                             }});
                                                             // Multiplayer params
-                                                            put("multiPlayer", true);
+                                                            put(EntityDataKeys.multiPlayer, true);
                                                         }});
 
                                                         // Update the pair[index]'s stateMachine
@@ -659,9 +659,9 @@ public class GamePlayState extends BaseState {
                     
                                             if (isWinner) {
                                                 winner = pair[index];
-                                                int wins = Integer.parseInt(winner.data.get("wins").toString());
+                                                int wins = Integer.parseInt(winner.data.get(EntityDataKeys.wins).toString());
                                                 // Increment the number of wins in this tournament
-                                                winner.data.put("wins", ++wins);
+                                                winner.data.put(EntityDataKeys.wins, ++wins);
 
                                                 // Winner has the majority of wins, he is the winner of this bracket
                                                 // Only remove the other player if this condition is true
@@ -676,11 +676,11 @@ public class GamePlayState extends BaseState {
                                                     losingPlayer.data.put("numLosses",
                                                         (Integer.parseInt(losingPlayer.data.get("numLosses").toString()) + 1));
                                                     // This player is not the champion
-                                                    losingPlayer.data.put("champion", false);
+                                                    losingPlayer.data.put(EntityDataKeys.champion, false);
                                                     // Remove n
-                                                    losingPlayer.data.remove("n");
+                                                    losingPlayer.data.remove(EntityDataKeys.n);
                                                     // Remove wins since it is not relevant
-                                                    losingPlayer.data.remove("wins");
+                                                    losingPlayer.data.remove(EntityDataKeys.wins);
                                                     // Save data: change losingPlayer's state to PlayerSave
                                                     losingPlayer.changeState(StateNames.PlayerSave, new Hashtable<>() {{
                                                         put(DataKeys.entity, losingPlayer);
@@ -694,7 +694,7 @@ public class GamePlayState extends BaseState {
                                                 if (players.size() == 1) {
                                                     hasChampion = true;
                                                     champion = winner;
-                                                    champion.data.put("champion", true);
+                                                    champion.data.put(EntityDataKeys.champion, true);
                                                 }
 
                                                 break;
@@ -703,7 +703,7 @@ public class GamePlayState extends BaseState {
                                     }
                                     
                                     // If winner has the majority of wins, skip the remaining rounds
-                                    int wins = winner != null ? Integer.parseInt(winner.data.get("wins").toString()) : 0;
+                                    int wins = winner != null ? Integer.parseInt(winner.data.get(EntityDataKeys.wins).toString()) : 0;
                                     if (((float) wins / (float) bestOf) > 0.5) {
                                         break;
                                     }
@@ -734,7 +734,7 @@ public class GamePlayState extends BaseState {
                                 String name = itr.next();
 
                                 // Reset wins to 0
-                                treeMap.get(name).data.put("wins", 0);
+                                treeMap.get(name).data.put(EntityDataKeys.wins, 0);
 
                                 if (shufflePlayers) {
                                     int randIndex = r.nextInt(htSize);
@@ -746,17 +746,17 @@ public class GamePlayState extends BaseState {
                                     spots[randIndex] = 1;
 
                                     // Assign n (in random order)
-                                    treeMap.get(name).data.put("n", randIndex);
+                                    treeMap.get(name).data.put(EntityDataKeys.n, randIndex);
                                 } else {
                                     // Assign n (in sorted order)
-                                    treeMap.get(name).data.put("n", counter);
+                                    treeMap.get(name).data.put(EntityDataKeys.n, counter);
                                 }
 
                                 counter++;
                             }
 
                             // for (Map.Entry<String, Player> entry : players.entrySet()) {
-                            //     Util.log(entry.getValue().data.get("name") + "'s n: " + entry.getValue().data.get("n"));
+                            //     Util.log(entry.getValue().data.get("name") + "'s n: " + entry.getValue().data.get(EntityDataKeys.n));
                             // }
                         }
 
@@ -771,11 +771,11 @@ public class GamePlayState extends BaseState {
                         Player currentPlayer = entry.getValue();
 
                         // If those key:value pairs exist, Remove them since they're not relevant
-                        if (currentPlayer.data.containsKey("n")) {
-                            currentPlayer.data.remove("n");
+                        if (currentPlayer.data.containsKey(EntityDataKeys.n)) {
+                            currentPlayer.data.remove(EntityDataKeys.n);
                         }
-                        if (currentPlayer.data.containsKey("wins")) {
-                            currentPlayer.data.remove("wins");
+                        if (currentPlayer.data.containsKey(EntityDataKeys.wins)) {
+                            currentPlayer.data.remove(EntityDataKeys.wins);
                         }
 
                         if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
