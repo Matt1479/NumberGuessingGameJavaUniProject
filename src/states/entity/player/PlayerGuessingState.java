@@ -48,7 +48,7 @@ public class PlayerGuessingState extends EntityBaseState {
         this.range = Integer.parseInt(enterParams.get(EntityDataKeys.range).toString());
         this.seed = Integer.parseInt(enterParams.get(EntityDataKeys.seed).toString());
 
-        this.playerChances = Integer.parseInt(enterParams.get(EntityDataKeys.chances).toString());
+        this.playerChances = Integer.parseInt(enterParams.getOrDefault(EntityDataKeys.chances, 1).toString());
         this.playerLeastTries = Integer.parseInt(this.entity.data.get(EntityDataKeys.leastTries).toString());
 
         this.mixed = enterParams.containsKey(EntityDataKeys.guessParams);
