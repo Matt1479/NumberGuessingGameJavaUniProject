@@ -182,7 +182,8 @@ public class GamePlayState extends BaseState {
 
                 // Init
                 int playerGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
-                int programGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
+                int programGuessTarget;
+                // int programGuessTarget = settings.getStart() + r.nextInt(settings.getRange() + 1 - settings.getStart());
                 boolean isWinner = false;
                 boolean playerTurn = r.nextInt(2) == 0;
 
@@ -196,7 +197,12 @@ public class GamePlayState extends BaseState {
                 this.program.data.put(EntityDataKeys.tournament, false);
                 this.program.data.put(EntityDataKeys.multiPlayer, false);
 
-                Util.log("Welcome! Please note that the player's guess target is different from the program's");
+                // Prompt for target number (in range)
+                int target;
+                do {
+                    target = Util.getInt(this.in, "What is the target number that the program should guess: ");
+                } while (target < this.settings.getStart() || target > this.settings.getRange());
+                programGuessTarget = target;
                 
                 while (!isWinner) {
                     if (playerTurn) {
@@ -858,6 +864,28 @@ public class GamePlayState extends BaseState {
     }
 
     public void displayOptions() {
+        /* Gameplay types:
+            * Player Guessing:
+                * The player guesses the program's number.
+                * Program gives feedback (e.g., "too high" or "too low").
+
+            * Reverse Gameplay:
+                * The program guesses the player's number.
+                * Range shrinks based on feedback.
+
+            * Mixed Gameplay:
+                * Turns alternate between the player and the program.
+                * First to guess correctly wins.
+
+            * Multi-Player Gameplay:
+                * Normal mode:
+                    * Multiple players compete
+                        * Leader perk: 1 extra move
+                        * Champion perk: Able to swap guess target once per game, 1 in 2 chance to occur
+                * Tournament Mode:
+                    * Players compete in organized formats like Best of 1, Best of 3, Best of n.
+                        * Champion perk: 1-3 extra tries (random)
+        */
         Util.log("\nOptions:\n");
         int i = 0;
         Util.log(i + ". " + "Player is guessing");              i++;

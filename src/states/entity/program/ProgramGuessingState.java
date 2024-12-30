@@ -126,8 +126,11 @@ public class ProgramGuessingState extends EntityBaseState {
     public boolean guess(int n) {
         // Create an instance of Random
         Random r = this.seed == -1 ? new Random() : new Random(seed);
-        // Pseudo-randomly generate target number
-        int target = this.start + r.nextInt(this.range + 1 - this.start);
+        // Prompt for target number (in range)
+        int target;
+        do {
+            target = Util.getInt(this.in, "What is the target number that the program should guess: ");
+        } while (target < this.start || target > this.range);
         // Pseudo-randomly generate the program's guess
         int programGuess = this.start + r.nextInt(this.range + 1 - this.start);
 
