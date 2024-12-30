@@ -20,6 +20,7 @@ import states.entity.player.PlayerLoadState;
 import states.entity.player.PlayerStateFactory;
 import states.entity.program.Program;
 import states.entity.program.ProgramStateFactory;
+import utility.Constants;
 import utility.Settings;
 import utility.Util;
 
@@ -86,6 +87,8 @@ public class GamePlayState extends BaseState {
         
         switch (choice) {
             case 0:
+                // Prompt for name
+                this.p.data.put("promptForName", true);
                 // Load player data (if it exists)
                 this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                     put(DataKeys.entity, p);
@@ -161,6 +164,8 @@ public class GamePlayState extends BaseState {
                 break;
         
             case 2:
+                // Prompt for name
+                this.p.data.put("promptForName", true);
                 // Load player data (if it exists)
                 this.p.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                     put(DataKeys.entity, p);
@@ -190,6 +195,8 @@ public class GamePlayState extends BaseState {
 
                 this.program.data.put(EntityDataKeys.tournament, false);
                 this.program.data.put(EntityDataKeys.multiPlayer, false);
+
+                Util.log("Welcome! Please note that the player's guess target is different from the program's");
                 
                 while (!isWinner) {
                     if (playerTurn) {
@@ -272,10 +279,10 @@ public class GamePlayState extends BaseState {
                         this.p.data.put(EntityDataKeys.leastTries, playerTries);
                     }
 
-                    this.p.data.put("numWins",
-                        (Integer.parseInt(this.p.data.get("numWins").toString()) + 1));
-                    this.program.data.put("numLosses",
-                    (Integer.parseInt(this.program.data.get("numLosses").toString()) + 1));
+                    this.p.data.put(EntityDataKeys.numWins,
+                        (Integer.parseInt(this.p.data.get(EntityDataKeys.numWins).toString()) + 1));
+                    this.program.data.put(EntityDataKeys.numLosses,
+                    (Integer.parseInt(this.program.data.get(EntityDataKeys.numLosses).toString()) + 1));
 
                     if (this.p.data.get(EntityDataKeys.hasWon).equals(true)) {
                         String input = Util.getString(this.in, "Do you want to change difficulty level (y/n): ");
@@ -293,10 +300,10 @@ public class GamePlayState extends BaseState {
                         this.program.data.put(EntityDataKeys.leastTries, programTries);
                     }
 
-                    this.program.data.put("numWins",
-                    (Integer.parseInt(this.program.data.get("numWins").toString()) + 1));
-                    this.p.data.put("numLosses",
-                    (Integer.parseInt(this.p.data.get("numLosses").toString()) + 1));
+                    this.program.data.put(EntityDataKeys.numWins,
+                    (Integer.parseInt(this.program.data.get(EntityDataKeys.numWins).toString()) + 1));
+                    this.p.data.put(EntityDataKeys.numLosses,
+                    (Integer.parseInt(this.p.data.get(EntityDataKeys.numLosses).toString()) + 1));
                 }
 
                 // Save data: change Player's state to PlayerSave
@@ -339,6 +346,8 @@ public class GamePlayState extends BaseState {
                     currentPlayer.addState(StateNames.PlayerIdle, new PlayerIdleState());
                     currentPlayer.addState(StateNames.PlayerLoad, new PlayerLoadState());
 
+                    // Prompt for name
+                    currentPlayer.data.put("promptForName", true);
                     // Load player data (if it exists)
                     currentPlayer.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                         put(DataKeys.entity, currentPlayer);
@@ -353,7 +362,6 @@ public class GamePlayState extends BaseState {
                             Util.log(entry.getKey() + ":" + entry.getValue());
                         }
                     }
-
                 } else if (choice == 1 || choice == 2) {
                     int numPlayers = 0;
 
@@ -394,6 +402,8 @@ public class GamePlayState extends BaseState {
                         // Add currentPlayer's name to his data
                         currentPlayer.data.put(EntityDataKeys.name, playerName);
     
+                        // Do not prompt for name
+                        currentPlayer.data.put("promptForName", false);
                         // Load player data (if it exists) and set some data
                         currentPlayer.changeState(StateNames.PlayerLoad, new Hashtable<>() {{
                             put(DataKeys.entity, currentPlayer);
@@ -529,15 +539,15 @@ public class GamePlayState extends BaseState {
         
                             if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
                                 // Increment the winning player's number of wins
-                                currentPlayer.data.put("numWins",
-                                    (Integer.parseInt(currentPlayer.data.get("numWins").toString()) + 1));
+                                currentPlayer.data.put(EntityDataKeys.numWins,
+                                    (Integer.parseInt(currentPlayer.data.get(EntityDataKeys.numWins).toString()) + 1));
                                 
                                 // Give the winning player a new key:value pair: {leader:true}
                                 currentPlayer.data.put(EntityDataKeys.leader, true);
                             } else {
                                 // Increment the losing player's number of losses
-                                currentPlayer.data.put("numLosses",
-                                    (Integer.parseInt(currentPlayer.data.get("numLosses").toString()) + 1));
+                                currentPlayer.data.put(EntityDataKeys.numLosses,
+                                    (Integer.parseInt(currentPlayer.data.get(EntityDataKeys.numLosses).toString()) + 1));
                                 
                                 // Give the losing player a new key:value pair: {leader:false}
                                 currentPlayer.data.put(EntityDataKeys.leader, false);
@@ -602,7 +612,17 @@ public class GamePlayState extends BaseState {
                                             break;
                                         }
 
-                                        // Util.log(pair[0].data.get("name") + " and " + pair[1].data.get("name") + " are competing!");
+                                        // Reset - no one has won yet
+                                        pair[0].data.put(EntityDataKeys.hasWon, false);
+                                        pair[1].data.put(EntityDataKeys.hasWon, false);
+
+                                        // Util.log(pair[0].data.get(EntityDataKeys.name) + " and " + pair[1].data.get(EntityDataKeys.name) + " are competing!");
+
+                                        if (Constants.DEBUG) {
+                                            Util.log(guessTarget);
+                                            Util.log("0's wins: " + pair[0].data.get("wins"));
+                                            Util.log("1's wins: " + pair[1].data.get("wins"));
+                                        }
     
                                         for (int j = 0; j < 2; j++) {
                                             // Weird Java stuff
@@ -669,12 +689,17 @@ public class GamePlayState extends BaseState {
                                                     // Get losingPlayer
                                                     Player losingPlayer = pair[index == 0 ? 1 : 0];
 
-                                                    // Util.log(losingPlayer.data.get("name") + " is out!");
+                                                    if (Constants.DEBUG) {
+                                                        Util.log("wins: " + winner.data.get(EntityDataKeys.wins));
+                                                        Util.log("bestOf: " + bestOf);
+                                                    }
+
+                                                    Util.log(losingPlayer.data.get(EntityDataKeys.name) + " is out!");
 
                                                     /* Save losing player's data */
                                                     // Increment the losing player's number of losses
-                                                    losingPlayer.data.put("numLosses",
-                                                        (Integer.parseInt(losingPlayer.data.get("numLosses").toString()) + 1));
+                                                    losingPlayer.data.put(EntityDataKeys.numLosses,
+                                                        (Integer.parseInt(losingPlayer.data.get(EntityDataKeys.numLosses).toString()) + 1));
                                                     // This player is not the champion
                                                     losingPlayer.data.put(EntityDataKeys.champion, false);
                                                     // Remove n
@@ -705,6 +730,8 @@ public class GamePlayState extends BaseState {
                                     // If winner has the majority of wins, skip the remaining rounds
                                     int wins = winner != null ? Integer.parseInt(winner.data.get(EntityDataKeys.wins).toString()) : 0;
                                     if (((float) wins / (float) bestOf) > 0.5) {
+                                        // Reset
+                                        winner.data.put(EntityDataKeys.wins, 0);
                                         break;
                                     }
 
@@ -754,10 +781,6 @@ public class GamePlayState extends BaseState {
 
                                 counter++;
                             }
-
-                            // for (Map.Entry<String, Player> entry : players.entrySet()) {
-                            //     Util.log(entry.getValue().data.get("name") + "'s n: " + entry.getValue().data.get(EntityDataKeys.n));
-                            // }
                         }
 
                         Util.log("The champion of the tournament: " + champion.data.get(EntityDataKeys.name));
