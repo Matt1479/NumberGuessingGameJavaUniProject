@@ -201,7 +201,6 @@ public class GamePlayState extends BaseState {
                             put(EntityDataKeys.range, settings.getRange());
                             put(EntityDataKeys.seed, settings.getSeed());
                             // Player data
-                            put(EntityDataKeys.chances, 1);
                             put(EntityDataKeys.tries, p.data.get(EntityDataKeys.tries));
                             // Guess params
                             put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
@@ -229,7 +228,6 @@ public class GamePlayState extends BaseState {
                                 : settings.getRange());
                             put(EntityDataKeys.seed, settings.getSeed());
                             // Program data
-                            put(EntityDataKeys.chances, 1);
                             put(EntityDataKeys.tries, program.data.get(EntityDataKeys.tries));
                             // Guess params
                             put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
@@ -474,7 +472,6 @@ public class GamePlayState extends BaseState {
                                     put(EntityDataKeys.range, settings.getRange());
                                     put(EntityDataKeys.seed, settings.getSeed());
                                     // Player data
-                                    put(EntityDataKeys.chances, 1);
                                     put(EntityDataKeys.tries, currentPlayer.data.get(EntityDataKeys.tries));
                                     // Guess params
                                     put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
@@ -499,7 +496,6 @@ public class GamePlayState extends BaseState {
                                             put(EntityDataKeys.range, settings.getRange());
                                             put(EntityDataKeys.seed, settings.getSeed());
                                             // Player data
-                                            put(EntityDataKeys.chances, 1);
                                             put(EntityDataKeys.tries, currentPlayer.data.get(EntityDataKeys.tries));
                                             // Guess params
                                             put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
@@ -611,25 +607,52 @@ public class GamePlayState extends BaseState {
                                         for (int j = 0; j < 2; j++) {
                                             // Weird Java stuff
                                             final int index = j;
-    
-                                            // Change pair[index]'s state to PlayerGuessingState
-                                            pair[index].changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
-                                                put(DataKeys.entity, pair[index]);
-                                                put(DataKeys.in, in);
-                                                put(EntityDataKeys.start, settings.getStart());
-                                                put(EntityDataKeys.range, settings.getRange());
-                                                put(EntityDataKeys.seed, settings.getSeed());
-                                                // Player data
-                                                put(EntityDataKeys.chances, 1);
-                                                put(EntityDataKeys.tries, pair[index].data.get(EntityDataKeys.tries));
-                                                // Guess params
-                                                put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
-                                                    put(EntityDataKeys.playerGuessTarget, guessTarget);
+
+                                            // Champion perk: can do 1-3 moves (random)
+                                            if (pair[index].data.getOrDefault("champion", "false").equals("true")) {
+                                                for (int k = 0, tries = 1 + r.nextInt(3); k < tries; k++) {
+                                                    // If champion did not win yet, he can do a move
+                                                    if (!pair[index].data.get(EntityDataKeys.hasWon).equals(true)) {
+                                                        // Change pair[index]'s state to PlayerGuessingState
+                                                        pair[index].changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                                                            put(DataKeys.entity, pair[index]);
+                                                            put(DataKeys.in, in);
+                                                            put(EntityDataKeys.start, settings.getStart());
+                                                            put(EntityDataKeys.range, settings.getRange());
+                                                            put(EntityDataKeys.seed, settings.getSeed());
+                                                            // Player data
+                                                            put(EntityDataKeys.tries, pair[index].data.get(EntityDataKeys.tries));
+                                                            // Guess params
+                                                            put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                                                put(EntityDataKeys.playerGuessTarget, guessTarget);
+                                                            }});
+                                                            // Multiplayer params
+                                                            put("multiPlayer", true);
+                                                        }});
+
+                                                        // Update the pair[index]'s stateMachine
+                                                        pair[index].update();
+                                                    }
+                                                }
+                                            } else {
+                                                // Change pair[index]'s state to PlayerGuessingState
+                                                pair[index].changeState(StateNames.PlayerGuessing, new Hashtable<>() {{
+                                                    put(DataKeys.entity, pair[index]);
+                                                    put(DataKeys.in, in);
+                                                    put(EntityDataKeys.start, settings.getStart());
+                                                    put(EntityDataKeys.range, settings.getRange());
+                                                    put(EntityDataKeys.seed, settings.getSeed());
+                                                    // Player data
+                                                    put(EntityDataKeys.tries, pair[index].data.get(EntityDataKeys.tries));
+                                                    // Guess params
+                                                    put(EntityDataKeys.guessParams, new Hashtable<Object, Object>() {{
+                                                        put(EntityDataKeys.playerGuessTarget, guessTarget);
+                                                    }});
                                                 }});
-                                            }});
-                                            
-                                            // Update the pair[index]'s stateMachine
-                                            pair[index].update();
+
+                                                // Update the pair[index]'s stateMachine
+                                                pair[index].update();
+                                            }
                     
                                             // Check if pair[index] has won
                                             isWinner = pair[index].data.get(EntityDataKeys.hasWon).equals(true);
@@ -746,6 +769,14 @@ public class GamePlayState extends BaseState {
                     // For each key, value pair in players hash table...
                     for (Map.Entry<String, Player> entry : players.entrySet()) {
                         Player currentPlayer = entry.getValue();
+
+                        // If those key:value pairs exist, Remove them since they're not relevant
+                        if (currentPlayer.data.containsKey("n")) {
+                            currentPlayer.data.remove("n");
+                        }
+                        if (currentPlayer.data.containsKey("wins")) {
+                            currentPlayer.data.remove("wins");
+                        }
 
                         if (currentPlayer.data.get(EntityDataKeys.hasWon).equals(true)) {
                             // leastTries
