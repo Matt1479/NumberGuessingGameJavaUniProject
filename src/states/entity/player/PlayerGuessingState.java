@@ -59,8 +59,8 @@ public class PlayerGuessingState extends EntityBaseState {
         
         this.settings = (Settings) enterParams.get(DataKeys.settings);
         
-        this.multiPlayer = (boolean) this.entity.data.getOrDefault(EntityDataKeys.multiPlayer, false);
-        this.tournament = (boolean) this.entity.data.getOrDefault(EntityDataKeys.tournament, false);
+        this.multiPlayer = (boolean) this.entity.data.getOrDefault(EntityDataKeys.multiPlayer, false).equals(true);
+        this.tournament = (boolean) this.entity.data.getOrDefault(EntityDataKeys.tournament, false).equals(true);
     }
 
     @Override public void enter(Hashtable<Object, Object> enterParams) {
@@ -138,11 +138,11 @@ public class PlayerGuessingState extends EntityBaseState {
 
             // If Player has won, increment the number of wins, else increment the number of losses
             if (this.entity.data.get(EntityDataKeys.hasWon).equals(true)) {
-                this.entity.data.put("numWins",
-                    (Integer.parseInt(this.entity.data.get("numWins").toString()) + 1));
+                this.entity.data.put(EntityDataKeys.numWins,
+                    (Integer.parseInt(this.entity.data.get(EntityDataKeys.numWins).toString()) + 1));
             } else {
-                this.entity.data.put("numLosses",
-                    (Integer.parseInt(this.entity.data.get("numLosses").toString()) + 1));
+                this.entity.data.put(EntityDataKeys.numLosses,
+                    (Integer.parseInt(this.entity.data.get(EntityDataKeys.numLosses).toString()) + 1));
             }
         }
 
