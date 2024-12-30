@@ -8,10 +8,8 @@ import states.DataKeys;
 import states.StateNames;
 import states.entity.player.Player;
 import states.entity.program.Program;
-import utility.Settings;
 
 public class GameExitState extends BaseState {
-    private Settings settings;
     private Player p;
     private Program program;
 
@@ -21,8 +19,6 @@ public class GameExitState extends BaseState {
         this.program = (Program) enterParams.get("program");
         this.in = (Scanner) enterParams.get(DataKeys.in);
         this.stateName = (StateNames) enterParams.get(DataKeys.stateName);
-
-        this.settings = (Settings) enterParams.get(DataKeys.settings);
 
         if (!this.p.data.isEmpty()) {
             this.p.changeState(StateNames.PlayerSave, new Hashtable<>() {{
