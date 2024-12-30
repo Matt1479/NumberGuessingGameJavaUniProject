@@ -1,18 +1,32 @@
-## Getting Started
+# Number guessing game
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Project overview
+As the project title says, it is a number guessing game. It is written in Java, and it features multiple game modes as well as single-player and (offline) multi-player.
+The purpose of this project was to get familiar with Java and OOP.
 
-## Folder Structure
+## Game modes
+0. Player guessing:
+- The player tries to guess a number (within n tries) randomly chosen by the program.
+- Feedback is provided after each guess (e.g., "too high" or "too low").
+1. Reverse:
+- The player selects a number, and the program tries to guess it.
+- Range shrinks based on feedback (given automatically).
+2. Mixed:
+- Turns alternate between the player and the program.
+- First to guess correctly wins.
+3. Multi-player:
+- Normal mode:
+    - Multiple players compete to guess the (random) target number.
+        - The target number is the same for all players.
+    - The first to guess wins.
+    - Leader perk: the leader gets 1 extra move.
+    - Champion perk: Able to swap the target number once per game (to a random one), 1 in 2 chance to occurr.
+- Tournament mode:
+    - Players compete in structured formats like Best of 1 (BO1), Best of 3 (BO3), ..., Best of n.
+    - Champion perk: the champion gets 1-3 moves (random).
 
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## Features
+- Different game modes.
+- Difficulty levels: Easy, Normal, Custom.
+- Player data is being saved and loaded.
+- Perks.
