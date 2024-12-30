@@ -29,11 +29,12 @@ public class PlayerLoadState extends EntityBaseState {
 
     public void loadPlayerData() {
         String name;
-        if (this.entity.data.containsKey(EntityDataKeys.name)) {
-            name = this.entity.data.get(EntityDataKeys.name).toString();
+        if (this.entity.data.getOrDefault("promptForName", false).equals(true)) {
+            do {
+                name = Util.getString(in, "What is your name: ");
+            } while (name.equals(""));
         } else {
-            name = Util.getString(in, "What is your name: ");
-            name = name.equals("") ? Constants.DEFAULT_NAME : name;
+            name = this.entity.data.get(EntityDataKeys.name).toString();
         }
 
         Path filePath = Paths.get("./" + name + ".txt");
@@ -58,8 +59,8 @@ public class PlayerLoadState extends EntityBaseState {
             this.entity.data.put(EntityDataKeys.name, name);
             this.entity.data.put(EntityDataKeys.newPlayer, true);
             this.entity.data.put(EntityDataKeys.leastTries, settings.getChances());
-            this.entity.data.put("numWins", 0);
-            this.entity.data.put("numLosses", 0);
+            this.entity.data.put(EntityDataKeys.numWins, 0);
+            this.entity.data.put(EntityDataKeys.numLosses, 0);
         }
         this.entity.data.put(EntityDataKeys.difficultyLevel, settings.getDifficultyLevel());
     }
