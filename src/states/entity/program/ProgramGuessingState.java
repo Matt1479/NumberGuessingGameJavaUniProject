@@ -59,7 +59,9 @@ public class ProgramGuessingState extends EntityBaseState {
             }
         }
 
-        Util.log("The guessing range is [" + this.start + ", " + this.range + "]");
+        if (Constants.DEBUG) {
+            Util.log("The guessing range is [" + this.start + ", " + this.range + "]");
+        }
     }
 
     @Override @SuppressWarnings("unchecked") public void update() {
@@ -93,11 +95,11 @@ public class ProgramGuessingState extends EntityBaseState {
 
             // If Program has won, increment the number of wins, else increment the number of losses
             if (this.entity.data.get(EntityDataKeys.hasWon).equals(true)) {
-                this.entity.data.put("numWins",
-                    (Integer.parseInt(this.entity.data.get("numWins").toString()) + 1));
+                this.entity.data.put(EntityDataKeys.numWins,
+                    (Integer.parseInt(this.entity.data.get(EntityDataKeys.numWins).toString()) + 1));
             } else {
-                this.entity.data.put("numLosses",
-                    (Integer.parseInt(this.entity.data.get("numLosses").toString()) + 1));
+                this.entity.data.put(EntityDataKeys.numLosses,
+                    (Integer.parseInt(this.entity.data.get(EntityDataKeys.numLosses).toString()) + 1));
             }
         }
 
@@ -139,10 +141,14 @@ public class ProgramGuessingState extends EntityBaseState {
 
             // If guess too low, too high, or equal
             if (programGuess < target) {
-                Util.log("Too low, ", false);
+                if (Constants.DEBUG) {
+                    Util.log("Too low, ", false);
+                }
                 this.start = programGuess + 1;
             } else if (programGuess > target) {
-                Util.log("Too high, ", false);
+                if (Constants.DEBUG) {
+                    Util.log("Too high, ", false);
+                }
                 this.range = programGuess - 1;
             } else {
                 Util.log("The program have guessed the number (" + target + ") successfully in " + this.programTries + " tries!");
@@ -150,7 +156,9 @@ public class ProgramGuessingState extends EntityBaseState {
             }
 
             if (this.programTries != this.programChances) {
-                Util.log("generating random int in the range of " + this.start + " to " + this.range + '\n');
+                if (Constants.DEBUG) {
+                    Util.log("generating random int in the range of " + this.start + " to " + this.range + '\n');
+                }
             }
             programGuess = this.start + r.nextInt(this.range + 1 - this.start);
             
@@ -183,17 +191,23 @@ public class ProgramGuessingState extends EntityBaseState {
 
         // If guess too low, too high, or equal
         if (programGuess < target) {
-            Util.log("Too low, ", false);
+            if (Constants.DEBUG) {
+                Util.log("Too low, ", false);
+            }
             this.start = programGuess + 1;
         } else if (programGuess > target) {
-            Util.log("Too high, ", false);
+            if (Constants.DEBUG) {
+                Util.log("Too high, ", false);
+            }
             this.range = programGuess - 1;
         } else {
             Util.log("The program have guessed the number (" + target + ")!");
             return true;
         }
 
-        Util.log("generating random int in the range of " + this.start + " to " + this.range);
+        if (Constants.DEBUG) {
+            Util.log("generating random int in the range of " + this.start + " to " + this.range);
+        }
         this.entity.data.put(EntityDataKeys.start, this.start);
         this.entity.data.put(EntityDataKeys.range, this.range);
 

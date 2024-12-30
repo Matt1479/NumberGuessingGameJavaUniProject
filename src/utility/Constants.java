@@ -18,6 +18,8 @@ public interface Constants {
 
     int CHANCES = CHANCES_EASY;
 
-    int GUESS_DELAY = 1000;
-    int TIME_WAIT_TO_RETURN = 3500;
+    int GUESS_DELAY = 500;
+    int TIME_WAIT_TO_RETURN = 2500;
+
+    boolean DEBUG = false;
 }
